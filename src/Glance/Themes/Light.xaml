@@ -1,0 +1,49 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <!-- Light theme. Same keys as Dark.xaml; ThemeManager swaps the two. Values come from the Glance design system. -->
+    <!-- Window background. -->
+    <SolidColorBrush x:Key="SurfaceBrush" Color="#FFF4F4F5"/>
+    <!-- Toolbars, action bar, side panel, cards, menus, tooltips, floating chips. -->
+    <SolidColorBrush x:Key="SurfaceRaisedBrush" Color="#FFFFFFFF"/>
+    <!-- Text fields, selects, checkboxes. -->
+    <SolidColorBrush x:Key="SurfaceSunkenBrush" Color="#FFFFFFFF"/>
+    <!-- Behind the screenshot / GIF. No text on it. -->
+    <SolidColorBrush x:Key="SurfaceCanvasBrush" Color="#FFDEDEE2"/>
+    <!-- Default button and tile fill. -->
+    <SolidColorBrush x:Key="ControlBrush" Color="#FFFFFFFF"/>
+    <SolidColorBrush x:Key="ControlHoverBrush" Color="#FFECECEF"/>
+    <SolidColorBrush x:Key="ControlPressBrush" Color="#FFE2E2E6"/>
+    <!-- Button and tile border; toolbar dividers. -->
+    <SolidColorBrush x:Key="ControlBorderBrush" Color="#FF8A8A94"/>
+    <!-- Hairlines between regions. -->
+    <SolidColorBrush x:Key="LineBrush" Color="#FFE4E4E7"/>
+    <!-- Field borders, slider track (3:1 on every surface). -->
+    <SolidColorBrush x:Key="LineStrongBrush" Color="#FF8A8A94"/>
+    <!-- Primary text. -->
+    <SolidColorBrush x:Key="InkBrush" Color="#FF18181B"/>
+    <!-- Secondary text: hints, labels, status (4.5:1 on every surface). -->
+    <SolidColorBrush x:Key="InkMutedBrush" Color="#FF5C5C66"/>
+    <!-- Primary buttons, selection, focus ring. -->
+    <SolidColorBrush x:Key="AccentBrush" Color="#FF0A6EA3"/>
+    <!-- Selected tool and menu row. -->
+    <SolidColorBrush x:Key="AccentSubtleBrush" Color="#1F0A6EA3"/>
+    <!-- Text on an accent fill. -->
+    <SolidColorBrush x:Key="OnAccentBrush" Color="#FFFFFFFF"/>
+    <SolidColorBrush x:Key="FocusRingBrush" Color="#FF0A6EA3"/>
+    <SolidColorBrush x:Key="StatusOkBrush" Color="#FF2E7D32"/>
+    <SolidColorBrush x:Key="StatusWarnBrush" Color="#FF9A6200"/>
+    <!-- Error text and the not-reachable dot. -->
+    <SolidColorBrush x:Key="StatusErrorBrush" Color="#FFC62828"/>
+    <!-- Live recording only. -->
+    <SolidColorBrush x:Key="StatusRecordBrush" Color="#FFC62828"/>
+    <SolidColorBrush x:Key="OnRecordBrush" Color="#FFFFFFFF"/>
+
+    <!-- The capture overlay draws on screen content, so it is the same in both themes. -->
+    <SolidColorBrush x:Key="OverlayScrimBrush" Color="#8C000000"/>
+    <SolidColorBrush x:Key="OverlaySelectionBrush" Color="#FF4FC3F7"/>
+    <SolidColorBrush x:Key="OverlayCrosshairBrush" Color="#99FFFFFF"/>
+
+    <!-- Only things floating over other apps or the window get a shadow. -->
+    <DropShadowEffect x:Key="FloatShadow" Color="Black" Direction="270" ShadowDepth="8" BlurRadius="24" Opacity="0.18"/>
+    <DropShadowEffect x:Key="PopupShadow" Color="Black" Direction="270" ShadowDepth="4" BlurRadius="12" Opacity="0.12"/>
+</ResourceDictionary>

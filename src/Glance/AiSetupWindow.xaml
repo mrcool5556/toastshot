@@ -1,0 +1,65 @@
+<Window x:Class="Glance.AiSetupWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Style="{StaticResource AppWindow}"
+        Title="Set up local AI"
+        Width="480" SizeToContent="Height" ResizeMode="NoResize"
+        WindowStartupLocation="CenterOwner">
+    <!-- What it unlocks, whether this PC can run it, what gets downloaded; then progress. -->
+    <DockPanel>
+        <Border DockPanel.Dock="Bottom" Background="{DynamicResource SurfaceRaisedBrush}" BorderBrush="{DynamicResource LineBrush}"
+                BorderThickness="0,1,0,0" Padding="20,12">
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                <Button x:Name="CancelButton" Content="Cancel" Style="{StaticResource GhostButton}" Margin="0,0,8,0" IsCancel="True" Click="OnCancel"/>
+                <Button x:Name="InstallButton" Content="Install" Style="{StaticResource PrimaryButton}" IsDefault="True" Click="OnInstall"/>
+            </StackPanel>
+        </Border>
+
+        <StackPanel Margin="24,20,24,22">
+            <TextBlock Text="Unlock Translate and AI vision" Style="{StaticResource WindowTitle}" FontSize="18"/>
+            <StackPanel Margin="0,12,0,0">
+                <DockPanel Margin="0,0,0,6">
+                    <Ellipse DockPanel.Dock="Left" Width="5" Height="5" Fill="{DynamicResource AccentBrush}" Margin="2,7,10,0" VerticalAlignment="Top"/>
+                    <TextBlock Style="{StaticResource Body}" Text="Translate the text in any capture into your language."/>
+                </DockPanel>
+                <DockPanel Margin="0,0,0,6">
+                    <Ellipse DockPanel.Dock="Left" Width="5" Height="5" Fill="{DynamicResource AccentBrush}" Margin="2,7,10,0" VerticalAlignment="Top"/>
+                    <TextBlock Style="{StaticResource Body}" Text="Read handwriting and stylised text that Windows OCR misses."/>
+                </DockPanel>
+                <DockPanel>
+                    <Ellipse DockPanel.Dock="Left" Width="5" Height="5" Fill="{DynamicResource AccentBrush}" Margin="2,7,10,0" VerticalAlignment="Top"/>
+                    <TextBlock Style="{StaticResource Body}" Text="Everything runs on this PC. Nothing is uploaded."/>
+                </DockPanel>
+            </StackPanel>
+
+            <Border Style="{StaticResource SettingsCard}" Margin="0,18,0,0">
+                <StackPanel>
+                    <Border Style="{StaticResource SettingRow}">
+                        <DockPanel>
+                            <Ellipse x:Name="FitDot" Width="8" Height="8" Fill="{DynamicResource InkMutedBrush}" VerticalAlignment="Top" Margin="0,5,10,0"/>
+                            <StackPanel>
+                                <TextBlock x:Name="CardText" Style="{StaticResource SettingLabel}"/>
+                                <TextBlock x:Name="FitText" Style="{StaticResource Hint}" Margin="0,2,0,0"/>
+                            </StackPanel>
+                        </DockPanel>
+                    </Border>
+                    <Border Style="{StaticResource SettingRow}" BorderThickness="0">
+                        <StackPanel>
+                            <TextBlock Text="Downloads" Style="{StaticResource SettingLabel}"/>
+                            <TextBlock x:Name="DownloadText" Style="{StaticResource Hint}" Margin="0,2,0,0"/>
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+            </Border>
+
+            <StackPanel x:Name="ProgressPanel" Margin="0,18,0,0" Visibility="Collapsed">
+                <DockPanel Margin="0,0,0,8">
+                    <TextBlock x:Name="ProgressDetail" DockPanel.Dock="Right" Style="{StaticResource MonoText}"/>
+                    <TextBlock x:Name="ProgressText" Style="{StaticResource Body}"/>
+                </DockPanel>
+                <ProgressBar x:Name="Progress" Minimum="0" Maximum="1"/>
+            </StackPanel>
+            <TextBlock x:Name="ErrorText" Style="{StaticResource ErrorText}" Margin="0,12,0,0" Visibility="Collapsed"/>
+        </StackPanel>
+    </DockPanel>
+</Window>

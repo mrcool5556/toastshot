@@ -1,0 +1,46 @@
+# Publishes a release when a version tag is pushed:  git tag v0.2.0  &&  git push origin v0.2.0
+# The release carries Glance.zip (the installer package) and that version's notes from CHANGELOG.md;
+# Glance's in-app updater reads both.
+name: Release
+
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Test
+        run: dotnet test Glance.sln -c Release --filter "Needs!=Desktop"
+
+      - name: Build the installer package
+        shell: pwsh
+        run: ./installer/build.ps1 -Version $env:GITHUB_REF_NAME.TrimStart('v')
+
+      # Code signing goes here once SignPath Foundation approves the project (they provide the action and settings).
+
+      - name: Release notes from CHANGELOG.md
+        shell: pwsh
+        run: |
+          $version = $env:GITHUB_REF_NAME.TrimStart('v')
+          $changelog = Get-Content CHANGELOG.md -Raw
+          $section = [regex]::Match($changelog, "(?ms)^## \[?$([regex]::Escape($version))\]?[^\n]*\n(.*?)(?=^## |\z)")
+          $notes = if ($section.Success) { $section.Groups[1].Value.Trim() } else { "Glance $version" }
+          Set-Content -Path notes.md -Value $notes -Encoding utf8
+
+      - name: Publish the release
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          $version = $env:GITHUB_REF_NAME.TrimStart('v')
+          gh release create $env:GITHUB_REF_NAME dist/Glance.zip --title "Glance $version" --notes-file notes.md

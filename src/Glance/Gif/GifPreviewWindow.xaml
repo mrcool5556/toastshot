@@ -1,0 +1,39 @@
+<Window x:Class="Glance.Gif.GifPreviewWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Style="{StaticResource AppWindow}"
+        Title="Glance — GIF"
+        Width="760" Height="560" MinWidth="460" MinHeight="300"
+        WindowStartupLocation="CenterScreen">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <Border Grid.Row="0" Background="{DynamicResource SurfaceCanvasBrush}">
+            <Viewbox Stretch="Uniform" StretchDirection="DownOnly" Margin="20">
+                <Image x:Name="Player" RenderOptions.BitmapScalingMode="HighQuality"/>
+            </Viewbox>
+        </Border>
+
+        <!-- Action bar: facts and save state on the left; outputs on the right, Copy last (same as the editor). -->
+        <Border Grid.Row="1" Style="{StaticResource ActionBar}">
+            <DockPanel>
+                <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" VerticalAlignment="Center">
+                    <ComboBox x:Name="SizeBox" Width="132" Height="28" Margin="0,0,8,0" ToolTip="Make the GIF smaller: fit a file size, or scale the picture down"/>
+                    <Button x:Name="PauseButton" Content="Pause" Style="{StaticResource GhostCompactButton}" Click="OnPause"/>
+                    <Rectangle Style="{StaticResource Divider}"/>
+                    <Button x:Name="Mp4Button" Content="Save MP4…" Style="{StaticResource CompactButton}" Margin="0,0,8,0" Click="OnSaveMp4" ToolTip="Save as video: full size and frame rate, far smaller than a GIF (Ctrl+Shift+S)"/>
+                    <Button Content="Save GIF…" Style="{StaticResource CompactButton}" Margin="0,0,8,0" Click="OnSave" ToolTip="Ctrl+S"/>
+                    <Button Content="Copy" Style="{StaticResource PrimaryCompactButton}" Click="OnCopy" ToolTip="Copy the GIF file; paste it into chats, browsers or folders (Ctrl+C)"/>
+                </StackPanel>
+                <StackPanel VerticalAlignment="Center" Margin="0,0,12,0">
+                    <TextBlock x:Name="Details" Foreground="{DynamicResource InkBrush}" FontSize="12" TextTrimming="CharacterEllipsis"/>
+                    <TextBlock x:Name="Status" Foreground="{DynamicResource InkMutedBrush}" FontSize="12" TextTrimming="CharacterEllipsis"
+                               Text="Not saved yet. Save or copy it before closing."/>
+                </StackPanel>
+            </DockPanel>
+        </Border>
+    </Grid>
+</Window>

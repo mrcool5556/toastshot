@@ -1,0 +1,277 @@
+<Window x:Class="Glance.SettingsWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Style="{StaticResource AppWindow}"
+        Title="Glance settings"
+        Width="560" SizeToContent="Height" ResizeMode="NoResize"
+        WindowStartupLocation="CenterOwner">
+    <!-- Windows-Settings-style rows: what it is on the left (with a one-line hint), the control on the right. -->
+    <DockPanel>
+        <!-- Footer band: the primary button always sits in the same place; problems show beside it. -->
+        <Border DockPanel.Dock="Bottom" Background="{DynamicResource SurfaceRaisedBrush}" BorderBrush="{DynamicResource LineBrush}"
+                BorderThickness="0,1,0,0" Padding="20,12">
+            <DockPanel>
+                <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" VerticalAlignment="Center">
+                    <Button Content="Cancel" Style="{StaticResource GhostButton}" Margin="0,0,8,0" IsCancel="True" Click="OnCancel"/>
+                    <Button Content="Save" Style="{StaticResource PrimaryButton}" IsDefault="True" Click="OnSave"/>
+                </StackPanel>
+                <TextBlock x:Name="Error" Style="{StaticResource ErrorText}" Margin="0,0,12,0" Visibility="Collapsed"/>
+            </DockPanel>
+        </Border>
+
+        <ScrollViewer VerticalScrollBarVisibility="Auto" Focusable="False">
+        <StackPanel Margin="20,16,20,20">
+            <TextBlock Text="General" Style="{StaticResource SectionTitle}"/>
+            <Border Style="{StaticResource SettingsCard}">
+                <Border Style="{StaticResource SettingRow}" BorderThickness="0">
+                    <DockPanel>
+                        <CheckBox x:Name="StartWithWindows" DockPanel.Dock="Right" VerticalAlignment="Center" AutomationProperties.Name="Start with Windows"/>
+                        <StackPanel VerticalAlignment="Center">
+                            <TextBlock Text="Start with Windows" Style="{StaticResource SettingLabel}"/>
+                            <TextBlock Text="Opens in the notification area when you sign in" Style="{StaticResource Hint}"/>
+                        </StackPanel>
+                    </DockPanel>
+                </Border>
+            </Border>
+
+            <TextBlock Text="Hotkeys" Style="{StaticResource SectionTitle}" Margin="2,20,0,8"/>
+            <Border Style="{StaticResource SettingsCard}">
+                <StackPanel>
+                    <Border Style="{StaticResource SettingRow}">
+                        <DockPanel>
+                            <TextBox x:Name="CaptureHotkey" DockPanel.Dock="Right" Style="{StaticResource HotkeyBox}" Width="220" VerticalAlignment="Center"
+                                     PreviewKeyDown="OnHotkeyKey" PreviewKeyUp="OnHotkeyKeyUp" ToolTip="Click, then press the key or combination"/>
+                            <StackPanel VerticalAlignment="Center">
+                                <TextBlock Text="Capture a region" Style="{StaticResource SettingLabel}"/>
+                                <TextBlock Text="Click the box, then press a key" Style="{StaticResource Hint}"/>
+                            </StackPanel>
+                        </DockPanel>
+                    </Border>
+                    <Border Style="{StaticResource SettingRow}" BorderThickness="0">
+                        <DockPanel>
+                            <TextBox x:Name="GifHotkey" DockPanel.Dock="Right" Style="{StaticResource HotkeyBox}" Width="220" VerticalAlignment="Center"
+                                     PreviewKeyDown="OnHotkeyKey" PreviewKeyUp="OnHotkeyKeyUp" ToolTip="Click, then press the key or combination"/>
+                            <StackPanel VerticalAlignment="Center">
+                                <TextBlock Text="Record a GIF" Style="{StaticResource SettingLabel}"/>
+                                <TextBlock Text="Press it again to stop" Style="{StaticResource Hint}"/>
+                            </StackPanel>
+                        </DockPanel>
+                    </Border>
+                </StackPanel>
+            </Border>
+
+            <TextBlock Text="Text" Style="{StaticResource SectionTitle}" Margin="2,20,0,8"/>
+            <Border Style="{StaticResource SettingsCard}">
+                <StackPanel>
+                    <Border Style="{StaticResource SettingRow}">
+                        <DockPanel>
+                            <ComboBox x:Name="OcrLanguage" DockPanel.Dock="Right" Width="220" VerticalAlignment="Center"/>
+                            <StackPanel VerticalAlignment="Center">
+                                <TextBlock Text="Reading language" Style="{StaticResource SettingLabel}"/>
+                                <TextBlock Text="Used by Windows OCR" Style="{StaticResource Hint}"
+                                           ToolTip="Windows OCR reads only languages installed in Windows (Settings › Time &amp; language › Language &amp; region)."/>
+                            </StackPanel>
+                        </DockPanel>
+                    </Border>
+                    <Border Style="{StaticResource SettingRow}" BorderThickness="0">
+                        <DockPanel>
+                            <ComboBox x:Name="TargetLanguage" DockPanel.Dock="Right" IsEditable="True" Width="220" VerticalAlignment="Center"/>
+                            <TextBlock Text="Translate into" Style="{StaticResource SettingLabel}" VerticalAlignment="Center"/>
+                        </DockPanel>
+                    </Border>
+                </StackPanel>
+            </Border>
+
+            <TextBlock Text="Local AI" Style="{StaticResource SectionTitle}" Margin="2,20,0,8"/>
+            <Border Style="{StaticResource SettingsCard}">
+                <StackPanel>
+                    <!-- Status, with the one action that moves it forward (Set up…, Start, Unload now). -->
+                    <Border Style="{StaticResource SettingRow}">
+                        <DockPanel>
+                            <Button x:Name="AiAction" DockPanel.Dock="Right" Style="{StaticResource ButtonBase}" VerticalAlignment="Center" Visibility="Collapsed" Click="OnAiAction"/>
+                            <Ellipse x:Name="AiDot" Width="8" Height="8" Fill="{DynamicResource InkMutedBrush}" VerticalAlignment="Center" Margin="0,0,10,0"/>
+                            <StackPanel VerticalAlignment="Center" Margin="0,0,12,0">
+                                <TextBlock x:Name="AiStatus" Text="Checking…" Style="{StaticResource SettingLabel}"/>
+                                <TextBlock x:Name="AiDetail" Style="{StaticResource Hint}"/>
+                            </StackPanel>
+                        </DockPanel>
+                    </Border>
+                    <Border Style="{StaticResource SettingRow}">
+                        <DockPanel>
+                            <ComboBox x:Name="MemoryMode" DockPanel.Dock="Right" Width="220" VerticalAlignment="Center"/>
+                            <StackPanel VerticalAlignment="Center">
+                                <TextBlock Text="Free graphics memory" Style="{StaticResource SettingLabel}"/>
+                                <TextBlock Text="The next use waits a few seconds to reload" Style="{StaticResource Hint}"/>
+                            </StackPanel>
+                        </DockPanel>
+                    </Border>
+                    <Border Style="{StaticResource SettingRow}">
+                        <DockPanel>
+                            <CheckBox x:Name="AiEnabled" DockPanel.Dock="Right" VerticalAlignment="Center" AutomationProperties.Name="Use local AI"/>
+                            <StackPanel VerticalAlignment="Center">
+                                <TextBlock Text="Use local AI" Style="{StaticResource SettingLabel}"/>
+                                <TextBlock Text="Off hides Translate and AI vision" Style="{StaticResource Hint}"/>
+                            </StackPanel>
+                        </DockPanel>
+                    </Border>
+                    <Border Style="{StaticResource SettingRow}" BorderThickness="0" MinHeight="0" Padding="8,6">
+                        <ToggleButton x:Name="AdvancedToggle" HorizontalAlignment="Left" Cursor="Hand" Focusable="True" Click="OnAdvanced">
+                            <ToggleButton.Template>
+                                <ControlTemplate TargetType="ToggleButton">
+                                    <Border x:Name="Chrome" Background="Transparent" CornerRadius="6" Padding="8,4">
+                                        <StackPanel Orientation="Horizontal">
+                                            <TextBlock Text="Advanced" Foreground="{DynamicResource InkMutedBrush}" FontSize="12"/>
+                                            <Path x:Name="Chevron" Data="M0,0 L4,4 L8,0" Stroke="{DynamicResource InkMutedBrush}" StrokeThickness="1.5"
+                                                  VerticalAlignment="Center" Margin="8,1,0,0" RenderTransformOrigin="0.5,0.5">
+                                                <Path.RenderTransform>
+                                                    <RotateTransform x:Name="Turn" Angle="0"/>
+                                                </Path.RenderTransform>
+                                            </Path>
+                                        </StackPanel>
+                                    </Border>
+                                    <ControlTemplate.Triggers>
+                                        <Trigger Property="IsMouseOver" Value="True">
+                                            <Setter TargetName="Chrome" Property="Background" Value="{DynamicResource ControlHoverBrush}"/>
+                                        </Trigger>
+                                        <Trigger Property="IsChecked" Value="True">
+                                            <Setter TargetName="Chevron" Property="RenderTransform">
+                                                <Setter.Value>
+                                                    <RotateTransform Angle="180"/>
+                                                </Setter.Value>
+                                            </Setter>
+                                        </Trigger>
+                                    </ControlTemplate.Triggers>
+                                </ControlTemplate>
+                            </ToggleButton.Template>
+                        </ToggleButton>
+                    </Border>
+
+                    <!-- Advanced: for people who run their own models or server. -->
+                    <StackPanel x:Name="AdvancedPanel" Visibility="Collapsed">
+                        <Border Style="{StaticResource SettingRow}" BorderThickness="0,1,0,1">
+                            <DockPanel>
+                                <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" VerticalAlignment="Center">
+                                    <TextBox x:Name="OllamaUrl" Width="180"/>
+                                    <Button Style="{StaticResource ButtonBase}" Width="32" Padding="0" Margin="8,0,0,0" Click="OnRefreshModels" ToolTip="Refresh the model lists">
+                                        <Path Data="M12.5,5.5 A5,5 0 1 0 13,9.5 M12.5,2.5 L12.5,5.5 L9.5,5.5" Width="16" Height="16" Stroke="{DynamicResource InkBrush}" StrokeThickness="1.5"
+                                              StrokeStartLineCap="Round" StrokeEndLineCap="Round" StrokeLineJoin="Round"/>
+                                    </Button>
+                                </StackPanel>
+                                <StackPanel VerticalAlignment="Center">
+                                    <TextBlock Text="Ollama server" Style="{StaticResource SettingLabel}"/>
+                                    <TextBlock x:Name="ModelStatus" Style="{StaticResource Hint}"/>
+                                </StackPanel>
+                            </DockPanel>
+                        </Border>
+                        <Border Style="{StaticResource SettingRow}">
+                            <DockPanel>
+                                <ComboBox x:Name="TranslateModel" DockPanel.Dock="Right" IsEditable="True" Width="220" VerticalAlignment="Center"/>
+                                <StackPanel VerticalAlignment="Center">
+                                    <TextBlock Text="Translation model" Style="{StaticResource SettingLabel}"/>
+                                    <TextBlock Text="Any text model" Style="{StaticResource Hint}"/>
+                                </StackPanel>
+                            </DockPanel>
+                        </Border>
+                        <Border Style="{StaticResource SettingRow}">
+                            <DockPanel>
+                                <ComboBox x:Name="VisionModel" DockPanel.Dock="Right" IsEditable="True" Width="220" VerticalAlignment="Center"/>
+                                <StackPanel VerticalAlignment="Center">
+                                    <TextBlock Text="Vision model" Style="{StaticResource SettingLabel}"/>
+                                    <TextBlock Text="Any model that can read images" Style="{StaticResource Hint}"/>
+                                </StackPanel>
+                            </DockPanel>
+                        </Border>
+                        <Border Style="{StaticResource SettingRow}" BorderThickness="0">
+                            <DockPanel>
+                                <Button DockPanel.Dock="Right" Content="Use recommended" Style="{StaticResource GhostButton}" VerticalAlignment="Center" Click="OnUseRecommended"/>
+                                <TextBlock x:Name="RecommendedNote" Style="{StaticResource Hint}" VerticalAlignment="Center"/>
+                            </DockPanel>
+                        </Border>
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+
+            <TextBlock Text="About" Style="{StaticResource SectionTitle}" Margin="2,20,0,8"/>
+            <Border Style="{StaticResource SettingsCard}">
+                <StackPanel>
+                    <Border Style="{StaticResource SettingRow}">
+                        <DockPanel>
+                            <Button x:Name="UpdateAction" DockPanel.Dock="Right" Content="Check now" Style="{StaticResource ButtonBase}" VerticalAlignment="Center" Click="OnUpdateAction"/>
+                            <StackPanel VerticalAlignment="Center">
+                                <TextBlock x:Name="VersionText" Style="{StaticResource SettingLabel}"/>
+                                <TextBlock x:Name="UpdateStatus" Style="{StaticResource Hint}"/>
+                            </StackPanel>
+                        </DockPanel>
+                    </Border>
+                    <Border x:Name="AutoUpdateRow" Style="{StaticResource SettingRow}">
+                        <DockPanel>
+                            <CheckBox x:Name="CheckForUpdates" DockPanel.Dock="Right" VerticalAlignment="Center" AutomationProperties.Name="Check for updates automatically"/>
+                            <StackPanel VerticalAlignment="Center">
+                                <TextBlock Text="Check for updates automatically" Style="{StaticResource SettingLabel}"/>
+                                <TextBlock Text="Asks GitHub about once a day; nothing else is sent" Style="{StaticResource Hint}"/>
+                            </StackPanel>
+                        </DockPanel>
+                    </Border>
+                    <Border x:Name="SupportRow" Style="{StaticResource SettingRow}">
+                        <DockPanel>
+                            <Button DockPanel.Dock="Right" Content="♥  Support" Style="{StaticResource ButtonBase}" VerticalAlignment="Center" Click="OnSupport"/>
+                            <StackPanel VerticalAlignment="Center">
+                                <TextBlock Text="Support Glance" Style="{StaticResource SettingLabel}"/>
+                                <TextBlock Text="Glance is free. If it's useful to you, you can chip in." Style="{StaticResource Hint}"/>
+                            </StackPanel>
+                        </DockPanel>
+                    </Border>
+                    <Border Style="{StaticResource SettingRow}" BorderThickness="0">
+                        <DockPanel>
+                            <Button x:Name="SourceButton" DockPanel.Dock="Right" Content="Source code" Style="{StaticResource GhostButton}" VerticalAlignment="Center" Click="OnSource"/>
+                            <StackPanel VerticalAlignment="Center">
+                                <TextBlock Text="Free and open source" Style="{StaticResource SettingLabel}"/>
+                                <TextBlock Text="GNU General Public License v3.0" Style="{StaticResource Hint}"/>
+                            </StackPanel>
+                        </DockPanel>
+                    </Border>
+                </StackPanel>
+            </Border>
+
+            <TextBlock Text="GIF recording" Style="{StaticResource SectionTitle}" Margin="2,20,0,8"/>
+            <Border Style="{StaticResource SettingsCard}">
+                <StackPanel>
+                    <Border Style="{StaticResource SettingRow}">
+                        <DockPanel>
+                            <TextBox x:Name="Fps" DockPanel.Dock="Right" Width="72" VerticalAlignment="Center" HorizontalContentAlignment="Right"/>
+                            <StackPanel VerticalAlignment="Center">
+                                <TextBlock Text="Frames per second" Style="{StaticResource SettingLabel}"/>
+                                <TextBlock Text="1 to 30" Style="{StaticResource Hint}"/>
+                            </StackPanel>
+                        </DockPanel>
+                    </Border>
+                    <Border Style="{StaticResource SettingRow}">
+                        <DockPanel>
+                            <TextBox x:Name="MaxSeconds" DockPanel.Dock="Right" Width="72" VerticalAlignment="Center" HorizontalContentAlignment="Right"/>
+                            <StackPanel VerticalAlignment="Center">
+                                <TextBlock Text="Stop after (seconds)" Style="{StaticResource SettingLabel}"/>
+                                <TextBlock Text="1 to 600" Style="{StaticResource Hint}"/>
+                            </StackPanel>
+                        </DockPanel>
+                    </Border>
+                    <Border Style="{StaticResource SettingRow}">
+                        <DockPanel>
+                            <ComboBox x:Name="GifLimit" DockPanel.Dock="Right" Width="120" VerticalAlignment="Center"/>
+                            <StackPanel VerticalAlignment="Center">
+                                <TextBlock Text="Keep GIFs under" Style="{StaticResource SettingLabel}"/>
+                                <TextBlock Text="Bigger recordings are shrunk to fit" Style="{StaticResource Hint}"/>
+                            </StackPanel>
+                        </DockPanel>
+                    </Border>
+                    <Border Style="{StaticResource SettingRow}" BorderThickness="0">
+                        <DockPanel>
+                            <CheckBox x:Name="ShowCursor" DockPanel.Dock="Right" VerticalAlignment="Center" AutomationProperties.Name="Show the mouse pointer"/>
+                            <TextBlock Text="Show the mouse pointer" Style="{StaticResource SettingLabel}" VerticalAlignment="Center"/>
+                        </DockPanel>
+                    </Border>
+                </StackPanel>
+            </Border>
+        </StackPanel>
+        </ScrollViewer>
+    </DockPanel>
+</Window>
