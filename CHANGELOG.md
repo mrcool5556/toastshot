@@ -3,6 +3,12 @@
 Each version's section becomes its GitHub release notes, which Toastshot shows in its update window.
 Write for people using Toastshot: what they can do now, what got fixed.
 
+## 0.3.2
+
+### Fixed
+- Clicking **Settings** again brings the open Settings window forward instead of opening another one.
+- With more than one Settings window open, closing one turned the hotkeys back on while the other was still open.
+
 ## 0.3.1
 
 - **Updating moved into Settings:** when a new version is out, Check now becomes **Update**, and what's new in every version since yours shows right below it.
