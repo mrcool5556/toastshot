@@ -15,7 +15,7 @@ public static class Project
     public const string Repository = "";
 
     /// <summary>Where the Support button goes (GitHub Sponsors, Ko-fi…).</summary>
-    public const string DonationUrl = "";
+    public const string DonationUrl = "https://ko-fi.com/toters";
 
     public static string? RepositoryUrl => Repository.Length > 0 ? $"https://github.com/{Repository}" : null;
 }
