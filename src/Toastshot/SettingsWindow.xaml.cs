@@ -120,7 +120,7 @@ public partial class SettingsWindow : Window
                 ? $"Toastshot {latest.Version} is available"
                 : $"Toastshot {latest.Version} is available · {_update.Newer.Count} updates since yours";
             // Only an installed copy can replace itself; any other copy gets the download page.
-            UpdateAction.Content = Updater.IsInstalledCopy && latest.ZipUrl is not null ? "Update" : "Download";
+            UpdateAction.Content = Updater.IsInstalledCopy && latest.PackageUrl is not null ? "Update" : "Download";
             UpdateAction.Style = (Style)FindResource("PrimaryButton");
             foreach (var release in _update.Newer)
             {

@@ -1,6 +1,5 @@
 using System.Diagnostics;
 using System.IO;
-using System.IO.Compression;
 using System.Net.Http;
 using System.Reflection;
 using System.Security.Cryptography;
@@ -21,7 +20,7 @@ public static class Project
 }
 
 /// <summary>One published version and what changed in it (the release notes, Markdown).</summary>
-public sealed record ReleaseInfo(Version Version, string Tag, string Notes, DateTimeOffset Published, string PageUrl, string? ZipUrl, string? ZipSha256);
+public sealed record ReleaseInfo(Version Version, string Tag, string Notes, DateTimeOffset Published, string PageUrl, string? PackageUrl, string? PackageSha256);
 
 /// <summary>The releases newer than this copy, newest first.</summary>
 public sealed record UpdateCheck(Version Current, IReadOnlyList<ReleaseInfo> Newer)
@@ -36,7 +35,7 @@ public sealed record UpdateCheck(Version Current, IReadOnlyList<ReleaseInfo> New
 public static class Updater
 {
     /// <summary>The release asset that holds the installer package (see installer\build.ps1).</summary>
-    public const string PackageName = "Toastshot.zip";
+    public const string PackageName = "ToastshotSetup.exe";
 
     public static Version Current { get; } = Normalize(Assembly.GetExecutingAssembly().GetName().Version ?? new Version(0, 0, 0));
 
@@ -109,18 +108,18 @@ public static class Updater
     /// </summary>
     public static async Task InstallAsync(HttpClient http, ReleaseInfo release, IProgress<double?> progress, CancellationToken ct)
     {
-        if (release.ZipUrl is null)
+        if (release.PackageUrl is null)
         {
             throw new InvalidOperationException($"Release {release.Tag} has no {PackageName} to install.");
         }
 
-        var zip = TempFiles.NewPath(".zip");
-        using (var response = await http.GetAsync(release.ZipUrl, HttpCompletionOption.ResponseHeadersRead, ct))
+        var setup = TempFiles.NewPath(".exe");
+        using (var response = await http.GetAsync(release.PackageUrl, HttpCompletionOption.ResponseHeadersRead, ct))
         {
             response.EnsureSuccessStatusCode();
             var total = response.Content.Headers.ContentLength;
             await using var source = await response.Content.ReadAsStreamAsync(ct);
-            await using var file = File.Create(zip);
+            await using var file = File.Create(setup);
             var buffer = new byte[1 << 16];
             long done = 0;
             int read;
@@ -132,35 +131,24 @@ public static class Updater
             }
         }
 
-        if (release.ZipSha256 is { } expected)
+        if (release.PackageSha256 is { } expected)
         {
-            await using var check = File.OpenRead(zip);
-            var actual = Convert.ToHexString(await SHA256.HashDataAsync(check, ct));
+            string actual;
+            await using (var check = File.OpenRead(setup))
+            {
+                actual = Convert.ToHexString(await SHA256.HashDataAsync(check, ct));
+            }
+
             if (!string.Equals(actual, expected, StringComparison.OrdinalIgnoreCase))
             {
-                TempFiles.TryDelete(zip);
+                TempFiles.TryDelete(setup);
                 throw new InvalidOperationException("The download doesn't match the release's checksum, so it wasn't installed.");
             }
         }
 
+        // Setup closes this copy of Toastshot, installs over it and starts the new version, so it runs on its own.
         progress.Report(null);
-        var folder = Path.Combine(TempFiles.Directory, $"update-{release.Version}");
-        if (Directory.Exists(folder))
-        {
-            Directory.Delete(folder, recursive: true);
-        }
-
-        ZipFile.ExtractToDirectory(zip, folder);
-        TempFiles.TryDelete(zip);
-        var installer = Directory.EnumerateFiles(folder, "install.ps1", SearchOption.AllDirectories).FirstOrDefault()
-                        ?? throw new InvalidOperationException("The release package has no installer.");
-
-        // The installer stops this copy of Toastshot, so it must run as its own process.
-        Process.Start(new ProcessStartInfo("powershell.exe", $"-NoProfile -ExecutionPolicy Bypass -WindowStyle Hidden -File \"{installer}\"")
-        {
-            UseShellExecute = false,
-            CreateNoWindow = true
-        });
+        Process.Start(new ProcessStartInfo(setup, "/VERYSILENT /SUPPRESSMSGBOXES /NORESTART") { UseShellExecute = false });
     }
 
     private static Version Normalize(Version v) => new(v.Major, Math.Max(0, v.Minor), Math.Max(0, v.Build));

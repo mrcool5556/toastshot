@@ -1,5 +1,5 @@
 # Publishes a release when a version tag is pushed:  git tag v0.2.0  &&  git push origin v0.2.0
-# The release carries Toastshot.zip (the installer package) and that version's notes from CHANGELOG.md;
+# The release carries ToastshotSetup.exe (the installer) and that version's notes from CHANGELOG.md;
 # Toastshot's in-app updater reads both.
 name: Release
 
@@ -22,7 +22,10 @@ jobs:
       - name: Test
         run: dotnet test Toastshot.sln -c Release --filter "Needs!=Desktop"
 
-      - name: Build the installer package
+      - name: Install Inno Setup
+        run: choco install innosetup -y --no-progress
+
+      - name: Build the installer
         shell: pwsh
         run: ./installer/build.ps1 -Version $env:GITHUB_REF_NAME.TrimStart('v')
 
@@ -43,4 +46,4 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           $version = $env:GITHUB_REF_NAME.TrimStart('v')
-          gh release create $env:GITHUB_REF_NAME dist/Toastshot.zip --title "Toastshot $version" --notes-file notes.md
+          gh release create $env:GITHUB_REF_NAME dist/ToastshotSetup.exe --title "Toastshot $version" --notes-file notes.md

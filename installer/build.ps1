@@ -1,22 +1,30 @@
-# Builds the installable package: dist\Toastshot\ (Toastshot.exe + Install Toastshot.cmd + scripts) and dist\Toastshot.zip.
-# Toastshot.exe is self-contained, so the PC it is installed on doesn't need .NET.
-param([string]$Version) # e.g. 0.2.0; defaults to the version in Toastshot.csproj
+# Builds the installer: dist\ToastshotSetup.exe, a single per-user setup (no admin, nothing else needed on the PC).
+# Toastshot.exe is self-contained, so the PC it is installed on doesn't need .NET. Needs Inno Setup 6 (jrsoftware.org).
+param([string]$Version) # e.g. 0.4.0; defaults to the version in Toastshot.csproj
 $ErrorActionPreference = 'Stop'
 $root = Split-Path $PSScriptRoot -Parent
-$out = Join-Path $root 'dist\Toastshot'
+$publish = Join-Path $root 'dist\publish'
 
-if (Test-Path $out) { Remove-Item $out -Recurse -Force }
-New-Item -ItemType Directory -Force $out | Out-Null
+if (-not $Version) {
+    $Version = ([xml](Get-Content (Join-Path $root 'src\Toastshot\Toastshot.csproj'))).Project.PropertyGroup.Version | Where-Object { $_ } | Select-Object -First 1
+}
 
+$iscc = @(
+    (Get-Command ISCC.exe -ErrorAction SilentlyContinue).Source
+    (Join-Path $env:LOCALAPPDATA 'Programs\Inno Setup 6\ISCC.exe')
+    (Join-Path ${env:ProgramFiles(x86)} 'Inno Setup 6\ISCC.exe')
+    (Join-Path $env:ProgramFiles 'Inno Setup 6\ISCC.exe')
+) | Where-Object { $_ -and (Test-Path $_) } | Select-Object -First 1
+if (-not $iscc) { throw 'Inno Setup 6 is needed to build the installer: winget install JRSoftware.InnoSetup' }
+
+if (Test-Path $publish) { Remove-Item $publish -Recurse -Force }
 dotnet publish (Join-Path $root 'src\Toastshot\Toastshot.csproj') -c Release -r win-x64 --self-contained true `
     -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -p:EnableCompressionInSingleFile=true `
-    -p:DebugType=none -o $out -nologo $(if ($Version) { "-p:Version=$Version" })
+    -p:DebugType=none -o $publish -nologo "-p:Version=$Version"
 if ($LASTEXITCODE -ne 0) { throw 'dotnet publish failed.' }
 
-Copy-Item (Join-Path $PSScriptRoot 'install.ps1'), (Join-Path $PSScriptRoot 'uninstall.ps1'), (Join-Path $PSScriptRoot 'Install Toastshot.cmd') $out
-Get-ChildItem $out -Exclude 'Toastshot.exe', '*.ps1', '*.cmd' | Remove-Item -Recurse -Force   # leftovers such as .pdb files
+& $iscc /Q "/DAppVersion=$Version" "/DSourceExe=$publish\Toastshot.exe" (Join-Path $PSScriptRoot 'Toastshot.iss')
+if ($LASTEXITCODE -ne 0) { throw 'Inno Setup failed.' }
 
-$zip = Join-Path $root 'dist\Toastshot.zip'
-if (Test-Path $zip) { Remove-Item $zip -Force }
-Compress-Archive -Path $out -DestinationPath $zip
-Write-Host "Built $out and $zip ($([math]::Round((Get-Item $zip).Length / 1MB)) MB)."
+$setup = Join-Path $root 'dist\ToastshotSetup.exe'
+Write-Host "Built $setup ($([math]::Round((Get-Item $setup).Length / 1MB)) MB), Toastshot $Version."

@@ -23,11 +23,12 @@ Toastshot is free and open source. If it's useful to you, you can support it (se
 
 ## Download and install
 
-1. Download **Toastshot.zip** from the [latest release](../../releases/latest) and unzip it.
-2. Double-click **Install Toastshot.cmd**. No admin rights needed, and you don't need anything else installed.
+Download **ToastshotSetup.exe** from the [latest release](../../releases/latest) and run it. No admin rights needed, and you
+don't need anything else installed.
 
 Toastshot goes to `%LOCALAPPDATA%\Programs\Toastshot`, with a Start menu shortcut. Uninstall it from *Settings › Apps*. When a
-new version is out, Toastshot shows **See what's new**, listing every change since your version, with a one-click update.
+new version is out, a dot appears next to **Settings**: *Settings › General* lists every change since your version, with a
+one-click **Update**.
 
 > Windows may say "Windows protected your PC" for a new app it doesn't know yet. Choose **More info › Run anyway**.
 
@@ -99,11 +100,11 @@ Needs the .NET 8 SDK on Windows 10 (2004) or later.
 ```
 dotnet build Toastshot.sln
 dotnet test Toastshot.sln
-powershell -ExecutionPolicy Bypass -File installer\build.ps1   # the installer package, in dist\
+powershell -ExecutionPolicy Bypass -File installer\build.ps1   # dist\ToastshotSetup.exe (needs Inno Setup 6)
 ```
 
 **Start Toastshot.cmd** builds and runs it. To publish a release, add the version's notes to `CHANGELOG.md`, then push a tag:
-`git tag v0.2.0` and `git push origin v0.2.0`. GitHub Actions tests it, builds `Toastshot.zip` and publishes the release that
+`git tag v0.2.0` and `git push origin v0.2.0`. GitHub Actions tests it, builds `ToastshotSetup.exe` and publishes the release that
 the in-app updater reads.
 
 - **Tests** cover the GIF encoder (round-tripped through Windows' decoder), the shrinker and MP4 export, recording and
