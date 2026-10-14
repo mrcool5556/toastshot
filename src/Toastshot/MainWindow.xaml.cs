@@ -15,8 +15,8 @@ public partial class MainWindow : Window
         InitializeComponent();
         _app = app;
         _app.SettingsChanged += (_, _) => Refresh();
-        _app.UpdateFound += (_, _) => ShowUpdateStrip();
-        ShowUpdateStrip();
+        _app.UpdateFound += (_, _) => ShowUpdateDot();
+        ShowUpdateDot();
         Refresh();
         Activated += (_, _) =>
         {
@@ -128,16 +128,12 @@ public partial class MainWindow : Window
 
     private void OnSettings(object sender, RoutedEventArgs e) => _app.ShowSettings();
 
-    private void ShowUpdateStrip()
+    private void ShowUpdateDot()
     {
-        UpdateStrip.Visibility = _app.AvailableUpdate is null ? Visibility.Collapsed : Visibility.Visible;
-        if (_app.AvailableUpdate?.Latest is { } latest)
-        {
-            UpdateText.Text = $"Toastshot {latest.Version} is available";
-        }
+        var latest = _app.AvailableUpdate?.Latest;
+        UpdateDot.Visibility = latest is null ? Visibility.Collapsed : Visibility.Visible;
+        SettingsButton.ToolTip = latest is null ? null : $"Toastshot {latest.Version} is available";
     }
-
-    private void OnSeeUpdate(object sender, RoutedEventArgs e) => _app.ShowUpdate();
 
     private void OnQuit(object sender, RoutedEventArgs e) => _app.Exit();
 

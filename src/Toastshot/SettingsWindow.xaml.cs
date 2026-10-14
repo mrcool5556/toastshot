@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Net.Http;
 using System.Windows;
 using System.Windows.Controls;
@@ -47,12 +48,18 @@ public partial class SettingsWindow : Window
         _themeAtOpen = s.Theme;
         ThemeBox.ItemsSource = Themes;
         ThemeBox.SelectedIndex = Math.Max(0, Array.IndexOf(Themes, s.Theme));
+        EventHandler updateFound = (_, _) => ShowUpdateStatus(_app.AvailableUpdate);
+        _app.UpdateFound += updateFound;
         Closed += (_, _) =>
         {
             if (!_saved)
             {
                 ThemeManager.Use(Application.Current, _themeAtOpen); // Cancel undoes the preview
             }
+
+            _app.UpdateFound -= updateFound;
+            _updating?.Cancel();
+            _updateHttp.Dispose();
         };
         GifLimit.ItemsSource = GifLimits.Select(m => m == 0 ? "No limit" : $"{m} MB").ToList();
         GifLimit.SelectedIndex = Math.Max(0, Array.IndexOf(GifLimits, s.GifMaxMegabytes));
@@ -95,25 +102,61 @@ public partial class SettingsWindow : Window
 
     // ---------- About ----------
 
-    private void ShowUpdateStatus(UpdateCheck? check)
+    private UpdateCheck? _update;
+    private readonly HttpClient _updateHttp = new() { Timeout = Timeout.InfiniteTimeSpan };
+    private CancellationTokenSource? _updating;
+
+    /// <summary>
+    /// Up to date: "Check now". Update found: the button becomes Update and what's new opens below this row, one
+    /// card per release since this copy.
+    /// </summary>
+    internal void ShowUpdateStatus(UpdateCheck? check)
     {
-        if (check?.Latest is { } latest)
+        _update = check?.Latest is null ? null : check;
+        Releases.Children.Clear();
+        if (_update?.Latest is { } latest)
         {
-            UpdateStatus.Text = $"Toastshot {latest.Version} is available";
-            UpdateAction.Content = "See what's new";
+            UpdateStatus.Text = _update.Newer.Count == 1
+                ? $"Toastshot {latest.Version} is available"
+                : $"Toastshot {latest.Version} is available · {_update.Newer.Count} updates since yours";
+            // Only an installed copy can replace itself; any other copy gets the download page.
+            UpdateAction.Content = Updater.IsInstalledCopy && latest.ZipUrl is not null ? "Update" : "Download";
+            UpdateAction.Style = (Style)FindResource("PrimaryButton");
+            foreach (var release in _update.Newer)
+            {
+                Releases.Children.Add(ReleaseCard(release, first: Releases.Children.Count == 0));
+            }
+
+            UpdatePanel.Visibility = Visibility.Visible;
         }
         else
         {
             UpdateStatus.Text = _app.Settings.LastUpdateCheck is { } at ? $"Up to date · checked {at.LocalDateTime:d MMM, HH:mm}" : "Up to date";
             UpdateAction.Content = "Check now";
+            UpdateAction.Style = (Style)FindResource("ButtonBase");
+            UpdatePanel.Visibility = Visibility.Collapsed;
         }
+    }
+
+    private UIElement ReleaseCard(ReleaseInfo release, bool first)
+    {
+        var title = new DockPanel { Margin = new Thickness(0, 0, 0, 4) };
+        var date = new TextBlock { Text = release.Published == default ? "" : release.Published.LocalDateTime.ToString("d MMM yyyy"), Style = (Style)FindResource("Hint") };
+        DockPanel.SetDock(date, Dock.Right);
+        title.Children.Add(date);
+        title.Children.Add(new TextBlock { Text = $"What's new in {release.Version}", Style = (Style)FindResource("SettingLabel"), FontWeight = FontWeights.SemiBold });
+
+        var card = new StackPanel { Margin = new Thickness(0, first ? 0 : 14, 0, 0) };
+        card.Children.Add(title);
+        card.Children.Add(ReleaseNotes.Render(release.Notes));
+        return card;
     }
 
     private async void OnUpdateAction(object sender, RoutedEventArgs e)
     {
-        if (_app.AvailableUpdate is not null)
+        if (_update?.Latest is { } latest)
         {
-            _app.ShowUpdate();
+            await InstallAsync(latest);
             return;
         }
 
@@ -128,6 +171,50 @@ public partial class SettingsWindow : Window
         }
 
         ShowUpdateStatus(check);
+    }
+
+    /// <summary>An installed copy downloads, checks and installs the update, then restarts; any other copy opens the release page.</summary>
+    private async Task InstallAsync(ReleaseInfo latest)
+    {
+        if ((string)UpdateAction.Content == "Download")
+        {
+            Process.Start(new ProcessStartInfo(latest.PageUrl) { UseShellExecute = true });
+            return;
+        }
+
+        _updating = new CancellationTokenSource();
+        UpdateAction.IsEnabled = false;
+        Error.Visibility = Visibility.Collapsed;
+        UpdateProgress.Visibility = Visibility.Visible;
+        try
+        {
+            await Updater.InstallAsync(_updateHttp, latest, new Progress<double?>(fraction =>
+            {
+                Progress.IsIndeterminate = fraction is null;
+                if (fraction is { } f)
+                {
+                    ProgressText.Text = $"Downloading Toastshot {latest.Version}…";
+                    ProgressDetail.Text = $"{f:P0}";
+                    Progress.Value = f;
+                }
+                else
+                {
+                    ProgressText.Text = "Installing… Toastshot restarts in a moment.";
+                    ProgressDetail.Text = "";
+                }
+            }), _updating.Token);
+            Log.Write($"Update to {latest.Version} started.");
+        }
+        catch (Exception ex) when (ex is HttpRequestException or InvalidOperationException or System.IO.IOException or System.IO.InvalidDataException or System.ComponentModel.Win32Exception)
+        {
+            UpdateProgress.Visibility = Visibility.Collapsed;
+            ShowError($"Couldn't update: {ex.Message}");
+            UpdateAction.IsEnabled = true;
+            UpdateAction.Content = "Try again";
+        }
+        catch (OperationCanceledException)
+        {
+        }
     }
 
     private void OnSupport(object sender, RoutedEventArgs e) => Open(Project.DonationUrl);

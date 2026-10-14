@@ -104,14 +104,16 @@ public sealed class VisualSnapshotTests
             }
             Snapshot(new AiSetupWindow(controller), 480, 0, Path.Combine(outDir!, "12-ai-setup.png"));
 
-            // Update window for someone two releases behind.
+            // Settings for someone two releases behind: Update, with what's new under it.
             var releases = Updater.Parse("""
                 [{"tag_name":"v0.3.0","draft":false,"prerelease":false,"published_at":"2026-10-20T10:00:00Z","html_url":"https://x/3",
                   "body":"### New\n- **Save MP4** at full size and frame rate\n- GIF size menu: fit 5–50 MB or scale\n### Fixed\n- Copying no longer freezes when another app holds the clipboard","assets":[]},
                  {"tag_name":"v0.2.0","draft":false,"prerelease":false,"published_at":"2026-10-12T10:00:00Z","html_url":"https://x/2",
                   "body":"- Print Screen works inside games that block hotkeys\n- Local AI setup with Gemma 3 4B","assets":[]}]
                 """, new Version(0, 1, 0));
-            Snapshot(new UpdateWindow(new UpdateCheck(new Version(0, 1, 0), releases)), 520, 0, Path.Combine(outDir!, "13-update.png"));
+            var behind = new SettingsWindow(controller);
+            behind.ShowUpdateStatus(new UpdateCheck(new Version(0, 1, 0), releases));
+            Snapshot(behind, 560, 640, Path.Combine(outDir!, "13-update.png"));
 
             // GIF preview and recording bar
             var preview = new GifPreviewWindow(controller, Path.Combine(samples!, "sample.gif"), null);

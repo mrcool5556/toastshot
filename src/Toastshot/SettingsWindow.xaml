@@ -59,6 +59,19 @@
                                     </StackPanel>
                                 </DockPanel>
                             </Border>
+                            <!-- Shown when a newer Toastshot is out: every release since this copy, newest first. -->
+                            <Border x:Name="UpdatePanel" Style="{StaticResource SettingRow}" Padding="16,2,16,14" Visibility="Collapsed">
+                                <StackPanel>
+                                    <StackPanel x:Name="Releases"/>
+                                    <StackPanel x:Name="UpdateProgress" Margin="0,12,0,0" Visibility="Collapsed">
+                                        <DockPanel Margin="0,0,0,6">
+                                            <TextBlock x:Name="ProgressDetail" DockPanel.Dock="Right" Style="{StaticResource MonoText}"/>
+                                            <TextBlock x:Name="ProgressText" Style="{StaticResource Hint}"/>
+                                        </DockPanel>
+                                        <ProgressBar x:Name="Progress" Minimum="0" Maximum="1"/>
+                                    </StackPanel>
+                                </StackPanel>
+                            </Border>
                             <Border x:Name="AutoUpdateRow" Style="{StaticResource SettingRow}">
                                 <DockPanel>
                                     <CheckBox x:Name="CheckForUpdates" DockPanel.Dock="Right" VerticalAlignment="Center" AutomationProperties.Name="Check for updates automatically"/>

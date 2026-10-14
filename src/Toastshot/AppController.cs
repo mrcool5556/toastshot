@@ -75,13 +75,6 @@ public sealed class AppController : IDisposable
         }
     }
 
-    public void ShowUpdate()
-    {
-        if (AvailableUpdate is { } update)
-        {
-            new UpdateWindow(update).Show();
-        }
-    }
 
     public OllamaClient CreateOllama() => new(_http, Settings.OllamaUrl, LocalAi.KeepAliveValue(Settings.AiKeepAlive));
 
