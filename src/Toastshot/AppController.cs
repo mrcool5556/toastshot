@@ -22,6 +22,7 @@ public sealed class AppController : IDisposable
     private readonly Dictionary<string, DateTime> _lastFired = [];
     private TrayIcon? _tray;
     private MainWindow? _main;
+    private SettingsWindow? _settings;
     private GifSession? _gif;
     private bool _selecting;
     private bool _exiting;
@@ -266,10 +267,26 @@ public sealed class AppController : IDisposable
 
     public void ShowSettings()
     {
-        var window = new SettingsWindow(this);
+        // One Settings window: asking again brings the open one forward.
+        if (_settings is { } open)
+        {
+            if (open.WindowState == WindowState.Minimized)
+            {
+                open.WindowState = WindowState.Normal;
+            }
+
+            open.Activate();
+            return;
+        }
+
+        var window = _settings = new SettingsWindow(this);
         // Free the hotkeys while Settings is open so pressing the current combination can be recorded.
         window.Loaded += (_, _) => _hotkeys?.UnregisterAll();
-        window.Closed += (_, _) => RegisterHotkeys();
+        window.Closed += (_, _) =>
+        {
+            _settings = null;
+            RegisterHotkeys();
+        };
         if (_main is { IsVisible: true })
         {
             window.Owner = _main;
