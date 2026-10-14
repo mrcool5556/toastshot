@@ -97,7 +97,11 @@ public sealed class VisualSnapshotTests
             PumpUntil(() => !settings.AiStatus.Text.StartsWith("Checking"), TimeSpan.FromSeconds(5));
             settings.AdvancedToggle.IsChecked = true;
             settings.AdvancedPanel.Visibility = Visibility.Visible;
-            Snapshot(settings, 560, 0, Path.Combine(outDir!, "6-settings.png"));
+            for (var tab = 0; tab < settings.Tabs.Items.Count; tab++)
+            {
+                settings.Tabs.SelectedIndex = tab;
+                Snapshot(settings, 560, 640, Path.Combine(outDir!, $"6-settings-{tab + 1}.png"));
+            }
             Snapshot(new AiSetupWindow(controller), 480, 0, Path.Combine(outDir!, "12-ai-setup.png"));
 
             // Update window for someone two releases behind.

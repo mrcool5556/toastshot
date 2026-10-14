@@ -326,25 +326,25 @@ public partial class SettingsWindow : Window
     {
         if (!int.TryParse(Fps.Text, out var fps) || fps is < 1 or > 30)
         {
-            ShowError("Frames per second must be a number from 1 to 30.");
+            ShowError("Frames per second must be a number from 1 to 30.", Fps);
             return;
         }
 
         if (!int.TryParse(MaxSeconds.Text, out var seconds) || seconds is < 1 or > 600)
         {
-            ShowError("Maximum length must be 1 to 600 seconds.");
+            ShowError("Maximum length must be 1 to 600 seconds.", MaxSeconds);
             return;
         }
 
         if (!Uri.TryCreate(OllamaUrl.Text.Trim(), UriKind.Absolute, out var uri) || uri.Scheme is not ("http" or "https"))
         {
-            ShowError("The Ollama address must look like http://localhost:11434");
+            ShowError("The Ollama address must look like http://localhost:11434", OllamaUrl);
             return;
         }
 
         if (CaptureHotkey.Text == GifHotkey.Text)
         {
-            ShowError("The two hotkeys must be different.");
+            ShowError("The two hotkeys must be different.", GifHotkey);
             return;
         }
 
@@ -391,5 +391,27 @@ public partial class SettingsWindow : Window
     {
         Error.Text = message;
         Error.Visibility = Visibility.Visible;
+    }
+
+    /// <summary>Shows the problem and takes you to the field, on whichever tab (or inside Advanced) it is.</summary>
+    private void ShowError(string message, Control field)
+    {
+        ShowError(message);
+        for (DependencyObject? node = field; node is not null; node = LogicalTreeHelper.GetParent(node))
+        {
+            if (node == AdvancedPanel && AdvancedToggle.IsChecked != true)
+            {
+                AdvancedToggle.IsChecked = true;
+                AdvancedPanel.Visibility = Visibility.Visible;
+            }
+            else if (node is TabItem tab)
+            {
+                tab.IsSelected = true;
+                break;
+            }
+        }
+
+        // The tab's content is built when it's shown, so focus once layout has caught up.
+        Dispatcher.BeginInvoke(() => field.Focus(), System.Windows.Threading.DispatcherPriority.Input);
     }
 }
