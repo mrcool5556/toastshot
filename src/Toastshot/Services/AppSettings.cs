@@ -16,6 +16,9 @@ public sealed class AppSettings
     /// <summary>Translate and AI vision are shown and use Ollama. Off hides them and never contacts Ollama.</summary>
     public bool AiEnabled { get; set; } = true;
 
+    /// <summary>"System" (follow the Windows app mode), "Dark" or "Light".</summary>
+    public string Theme { get; set; } = "System";
+
     /// <summary>How long the model stays in graphics memory after use (Ollama keep_alive): "30s", "2m", "5m", or "-1" for always.</summary>
     public string AiKeepAlive { get; set; } = "2m";
 
@@ -129,6 +132,7 @@ public sealed class AppSettings
         GifFramesPerSecond = Math.Clamp(GifFramesPerSecond, 1, 30);
         GifMaxSeconds = Math.Clamp(GifMaxSeconds, 1, 600);
         GifMaxMegabytes = Math.Clamp(GifMaxMegabytes, 0, 1000);
+        Theme = Theme is "Dark" or "Light" ? Theme : "System";
         AiKeepAlive = LocalAi.MemoryModes.Any(m => m.KeepAlive == AiKeepAlive) ? AiKeepAlive : "2m";
         OllamaUrl = string.IsNullOrWhiteSpace(OllamaUrl) ? "http://localhost:11434" : OllamaUrl.Trim().TrimEnd('/');
         TargetLanguage = string.IsNullOrWhiteSpace(TargetLanguage) ? "English" : TargetLanguage.Trim();

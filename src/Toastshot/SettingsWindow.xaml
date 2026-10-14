@@ -21,20 +21,7 @@
 
         <ScrollViewer VerticalScrollBarVisibility="Auto" Focusable="False">
         <StackPanel Margin="20,16,20,20">
-            <TextBlock Text="General" Style="{StaticResource SectionTitle}"/>
-            <Border Style="{StaticResource SettingsCard}">
-                <Border Style="{StaticResource SettingRow}" BorderThickness="0">
-                    <DockPanel>
-                        <CheckBox x:Name="StartWithWindows" DockPanel.Dock="Right" VerticalAlignment="Center" AutomationProperties.Name="Start with Windows"/>
-                        <StackPanel VerticalAlignment="Center">
-                            <TextBlock Text="Start with Windows" Style="{StaticResource SettingLabel}"/>
-                            <TextBlock Text="Opens in the notification area when you sign in" Style="{StaticResource Hint}"/>
-                        </StackPanel>
-                    </DockPanel>
-                </Border>
-            </Border>
-
-            <TextBlock Text="Hotkeys" Style="{StaticResource SectionTitle}" Margin="2,20,0,8"/>
+            <TextBlock Text="Hotkeys" Style="{StaticResource SectionTitle}"/>
             <Border Style="{StaticResource SettingsCard}">
                 <StackPanel>
                     <Border Style="{StaticResource SettingRow}">
@@ -54,6 +41,69 @@
                             <StackPanel VerticalAlignment="Center">
                                 <TextBlock Text="Record a GIF" Style="{StaticResource SettingLabel}"/>
                                 <TextBlock Text="Press it again to stop" Style="{StaticResource Hint}"/>
+                            </StackPanel>
+                        </DockPanel>
+                    </Border>
+                </StackPanel>
+            </Border>
+
+            <TextBlock Text="GIF recording" Style="{StaticResource SectionTitle}" Margin="2,20,0,8"/>
+            <Border Style="{StaticResource SettingsCard}">
+                <StackPanel>
+                    <Border Style="{StaticResource SettingRow}">
+                        <DockPanel>
+                            <TextBox x:Name="Fps" DockPanel.Dock="Right" Width="72" VerticalAlignment="Center" HorizontalContentAlignment="Right"/>
+                            <StackPanel VerticalAlignment="Center">
+                                <TextBlock Text="Frames per second" Style="{StaticResource SettingLabel}"/>
+                                <TextBlock Text="1 to 30" Style="{StaticResource Hint}"/>
+                            </StackPanel>
+                        </DockPanel>
+                    </Border>
+                    <Border Style="{StaticResource SettingRow}">
+                        <DockPanel>
+                            <TextBox x:Name="MaxSeconds" DockPanel.Dock="Right" Width="72" VerticalAlignment="Center" HorizontalContentAlignment="Right"/>
+                            <StackPanel VerticalAlignment="Center">
+                                <TextBlock Text="Stop after (seconds)" Style="{StaticResource SettingLabel}"/>
+                                <TextBlock Text="1 to 600" Style="{StaticResource Hint}"/>
+                            </StackPanel>
+                        </DockPanel>
+                    </Border>
+                    <Border Style="{StaticResource SettingRow}">
+                        <DockPanel>
+                            <ComboBox x:Name="GifLimit" DockPanel.Dock="Right" Width="120" VerticalAlignment="Center"/>
+                            <StackPanel VerticalAlignment="Center">
+                                <TextBlock Text="Keep GIFs under" Style="{StaticResource SettingLabel}"/>
+                                <TextBlock Text="Bigger recordings are shrunk to fit" Style="{StaticResource Hint}"/>
+                            </StackPanel>
+                        </DockPanel>
+                    </Border>
+                    <Border Style="{StaticResource SettingRow}" BorderThickness="0">
+                        <DockPanel>
+                            <CheckBox x:Name="ShowCursor" DockPanel.Dock="Right" VerticalAlignment="Center" AutomationProperties.Name="Show the mouse pointer"/>
+                            <TextBlock Text="Show the mouse pointer" Style="{StaticResource SettingLabel}" VerticalAlignment="Center"/>
+                        </DockPanel>
+                    </Border>
+                </StackPanel>
+            </Border>
+
+            <TextBlock Text="General" Style="{StaticResource SectionTitle}" Margin="2,20,0,8"/>
+            <Border Style="{StaticResource SettingsCard}">
+                <StackPanel>
+                    <Border Style="{StaticResource SettingRow}">
+                        <DockPanel>
+                            <ComboBox x:Name="ThemeBox" DockPanel.Dock="Right" Width="160" VerticalAlignment="Center" SelectionChanged="OnThemeChanged"/>
+                            <StackPanel VerticalAlignment="Center">
+                                <TextBlock Text="Theme" Style="{StaticResource SettingLabel}"/>
+                                <TextBlock Text="System follows your Windows app mode" Style="{StaticResource Hint}"/>
+                            </StackPanel>
+                        </DockPanel>
+                    </Border>
+                    <Border Style="{StaticResource SettingRow}" BorderThickness="0">
+                        <DockPanel>
+                            <CheckBox x:Name="StartWithWindows" DockPanel.Dock="Right" VerticalAlignment="Center" AutomationProperties.Name="Start with Windows"/>
+                            <StackPanel VerticalAlignment="Center">
+                                <TextBlock Text="Start with Windows" Style="{StaticResource SettingLabel}"/>
+                                <TextBlock Text="Opens in the notification area when you sign in" Style="{StaticResource Hint}"/>
                             </StackPanel>
                         </DockPanel>
                     </Border>
@@ -228,45 +278,6 @@
                                 <TextBlock Text="Free and open source" Style="{StaticResource SettingLabel}"/>
                                 <TextBlock Text="GNU General Public License v3.0" Style="{StaticResource Hint}"/>
                             </StackPanel>
-                        </DockPanel>
-                    </Border>
-                </StackPanel>
-            </Border>
-
-            <TextBlock Text="GIF recording" Style="{StaticResource SectionTitle}" Margin="2,20,0,8"/>
-            <Border Style="{StaticResource SettingsCard}">
-                <StackPanel>
-                    <Border Style="{StaticResource SettingRow}">
-                        <DockPanel>
-                            <TextBox x:Name="Fps" DockPanel.Dock="Right" Width="72" VerticalAlignment="Center" HorizontalContentAlignment="Right"/>
-                            <StackPanel VerticalAlignment="Center">
-                                <TextBlock Text="Frames per second" Style="{StaticResource SettingLabel}"/>
-                                <TextBlock Text="1 to 30" Style="{StaticResource Hint}"/>
-                            </StackPanel>
-                        </DockPanel>
-                    </Border>
-                    <Border Style="{StaticResource SettingRow}">
-                        <DockPanel>
-                            <TextBox x:Name="MaxSeconds" DockPanel.Dock="Right" Width="72" VerticalAlignment="Center" HorizontalContentAlignment="Right"/>
-                            <StackPanel VerticalAlignment="Center">
-                                <TextBlock Text="Stop after (seconds)" Style="{StaticResource SettingLabel}"/>
-                                <TextBlock Text="1 to 600" Style="{StaticResource Hint}"/>
-                            </StackPanel>
-                        </DockPanel>
-                    </Border>
-                    <Border Style="{StaticResource SettingRow}">
-                        <DockPanel>
-                            <ComboBox x:Name="GifLimit" DockPanel.Dock="Right" Width="120" VerticalAlignment="Center"/>
-                            <StackPanel VerticalAlignment="Center">
-                                <TextBlock Text="Keep GIFs under" Style="{StaticResource SettingLabel}"/>
-                                <TextBlock Text="Bigger recordings are shrunk to fit" Style="{StaticResource Hint}"/>
-                            </StackPanel>
-                        </DockPanel>
-                    </Border>
-                    <Border Style="{StaticResource SettingRow}" BorderThickness="0">
-                        <DockPanel>
-                            <CheckBox x:Name="ShowCursor" DockPanel.Dock="Right" VerticalAlignment="Center" AutomationProperties.Name="Show the mouse pointer"/>
-                            <TextBlock Text="Show the mouse pointer" Style="{StaticResource SettingLabel}" VerticalAlignment="Center"/>
                         </DockPanel>
                     </Border>
                 </StackPanel>

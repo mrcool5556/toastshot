@@ -112,7 +112,7 @@ public sealed class VisualSnapshotTests
             // GIF preview and recording bar
             var preview = new GifPreviewWindow(controller, Path.Combine(samples!, "sample.gif"), null);
             Snapshot(preview, 600, 340, Path.Combine(outDir!, "7-gif-preview.png"));
-            var bar = new RecordingBar("640 × 360 · 15 fps · up to 60 s");
+            var bar = new RecordingBar("640 × 360", 15, 60);
             Snapshot(bar, 0, 0, Path.Combine(outDir!, "8-recording-bar.png"));
 
             // Region selection overlay over a "frozen screen", mid-drag

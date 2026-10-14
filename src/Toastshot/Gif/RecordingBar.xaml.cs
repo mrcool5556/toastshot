@@ -1,16 +1,49 @@
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Media;
 
 namespace Toastshot.Gif;
 
-/// <summary>Record / Stop / Cancel controls shown next to the GIF area. Kept out of the recording.</summary>
+/// <summary>
+/// Record / Stop / Cancel controls shown next to the GIF area, with the frame rate and length to pick before
+/// recording. Kept out of the recording.
+/// </summary>
 public partial class RecordingBar : Window
 {
-    public RecordingBar(string info)
+    private static readonly int[] FrameRates = [5, 10, 12, 15, 20, 24, 30];
+    private static readonly int[] Lengths = [5, 10, 15, 30, 60, 120, 300, 600];
+
+    /// <param name="size">The area, e.g. "640 × 360".</param>
+    /// <param name="framesPerSecond">The frame rate to start with (from Settings).</param>
+    /// <param name="maxSeconds">The length to start with (from Settings).</param>
+    public RecordingBar(string size, int framesPerSecond, int maxSeconds)
     {
         InitializeComponent();
-        Info.Text = info;
+        Info.Text = size;
+        Fill(FpsBox, FrameRates, framesPerSecond, fps => $"{fps} fps");
+        Fill(LengthBox, Lengths, maxSeconds, LengthLabel);
         SourceInitialized += (_, _) => NativeWindows.ExcludeFromCapture(this);
+    }
+
+    public int FramesPerSecond => (int)((ComboBoxItem)FpsBox.SelectedItem).Tag;
+
+    public int MaxSeconds => (int)((ComboBoxItem)LengthBox.SelectedItem).Tag;
+
+    /// <summary>"30 s", "1 min", "90 s", "10 min".</summary>
+    internal static string LengthLabel(int seconds) => seconds >= 60 && seconds % 60 == 0 ? $"{seconds / 60} min" : $"{seconds} s";
+
+    /// <summary>The usual choices, plus the current value if it isn't one of them (set in Settings).</summary>
+    private static void Fill(ComboBox box, int[] choices, int current, Func<int, string> label)
+    {
+        foreach (var value in choices.Append(current).Distinct().Order())
+        {
+            var item = new ComboBoxItem { Content = label(value), Tag = value };
+            box.Items.Add(item);
+            if (value == current)
+            {
+                box.SelectedItem = item;
+            }
+        }
     }
 
     public event EventHandler? RecordClicked;
@@ -19,6 +52,7 @@ public partial class RecordingBar : Window
 
     public void ShowRecording()
     {
+        Choices.Visibility = Visibility.Collapsed;
         RecordButton.Visibility = Visibility.Collapsed;
         StopButton.Visibility = Visibility.Visible;
         Dot.SetResourceReference(System.Windows.Shapes.Shape.FillProperty, "StatusRecordBrush");

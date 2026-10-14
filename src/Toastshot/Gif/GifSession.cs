@@ -26,7 +26,7 @@ internal sealed class GifSession
         _region = region;
         _frame = new RegionFrame(region);
         var s = app.Settings;
-        _bar = new RecordingBar($"{region.Width} × {region.Height} · {s.GifFramesPerSecond} fps · up to {s.GifMaxSeconds} s");
+        _bar = new RecordingBar($"{region.Width} × {region.Height}", s.GifFramesPerSecond, s.GifMaxSeconds);
         _bar.RecordClicked += (_, _) => Start();
         _bar.StopClicked += async (_, _) => await StopAsync();
         _bar.CancelClicked += async (_, _) => await CancelAsync();
@@ -83,11 +83,22 @@ internal sealed class GifSession
             return;
         }
 
+        // The frame rate and length picked in the bar become the defaults for next time.
+        var (fps, seconds) = (_bar.FramesPerSecond, _bar.MaxSeconds);
+        if (fps != _app.Settings.GifFramesPerSecond || seconds != _app.Settings.GifMaxSeconds)
+        {
+            _app.SavePreference(p =>
+            {
+                p.GifFramesPerSecond = fps;
+                p.GifMaxSeconds = seconds;
+            });
+        }
+
         var s = _app.Settings;
         try
         {
             _recorder = new GifRecorder(new ScreenFrameSource(_region, s.GifShowCursor), TempFiles.NewPath(".gif"),
-                s.GifFramesPerSecond, TimeSpan.FromSeconds(s.GifMaxSeconds));
+                fps, TimeSpan.FromSeconds(seconds));
             _recorder.MaxDurationReached += (_, _) => _bar.Dispatcher.BeginInvoke(async () => await StopAsync());
             _recorder.Start();
         }

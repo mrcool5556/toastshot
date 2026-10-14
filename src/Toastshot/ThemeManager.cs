@@ -23,6 +23,28 @@ public static class ThemeManager
 
     public static AppTheme Current { get; private set; } = AppTheme.Dark;
 
+    /// <summary>The user's choice: "System" follows the Windows app mode; "Dark" or "Light" stay put.</summary>
+    public static string Preference { get; private set; } = "System";
+
+    /// <summary>The theme a preference means right now.</summary>
+    public static AppTheme Resolve(string preference) => preference switch
+    {
+        "Dark" => AppTheme.Dark,
+        "Light" => AppTheme.Light,
+        _ => SystemTheme()
+    };
+
+    /// <summary>Applies a preference ("System", "Dark" or "Light") and remembers it for Windows mode changes.</summary>
+    public static void Use(Application app, string preference)
+    {
+        Preference = preference;
+        var theme = Resolve(preference);
+        if (theme != Current || app.Resources.MergedDictionaries.Count == 0)
+        {
+            Apply(app, theme);
+        }
+    }
+
     /// <summary>Settings › Personalisation › Colours › "Choose your default app mode".</summary>
     public static AppTheme SystemTheme()
     {
@@ -81,7 +103,7 @@ public static class ThemeManager
 
     private static void OnUserPreferenceChanged(object sender, UserPreferenceChangedEventArgs e)
     {
-        if (e.Category == UserPreferenceCategory.General && _following is { } app)
+        if (e.Category == UserPreferenceCategory.General && Preference == "System" && _following is { } app)
         {
             app.Dispatcher.BeginInvoke(() =>
             {

@@ -44,6 +44,7 @@ public partial class App : Application
         AppSettings.MoveFromGlance();
         Services.Startup.MoveFromGlance(); // not Application.Startup
         _controller = new AppController(AppSettings.Load());
+        ThemeManager.Use(this, _controller.Settings.Theme); // System, or a fixed Dark/Light chosen in Settings
         _controller.Start(e.Args);
 
         // A second launch signals this event; show the window instead of running twice.

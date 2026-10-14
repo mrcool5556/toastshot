@@ -11,7 +11,14 @@
             <Ellipse x:Name="Dot" Width="10" Height="10" Fill="{DynamicResource InkMutedBrush}" VerticalAlignment="Center" Margin="0,0,8,0"/>
             <TextBlock x:Name="Clock" Text="0:00.0" FontFamily="{DynamicResource MonoFont}" Foreground="{DynamicResource InkBrush}"
                        VerticalAlignment="Center" Width="52"/>
-            <TextBlock x:Name="Info" Foreground="{DynamicResource InkMutedBrush}" FontSize="12" VerticalAlignment="Center" Margin="0,0,16,0"/>
+            <TextBlock x:Name="Info" Foreground="{DynamicResource InkMutedBrush}" FontSize="12" VerticalAlignment="Center" Margin="0,0,10,0"/>
+            <!-- Before recording: frame rate and length, remembered for next time. -->
+            <StackPanel x:Name="Choices" Orientation="Horizontal" VerticalAlignment="Center" Margin="0,0,10,0">
+                <ComboBox x:Name="FpsBox" Width="84" Height="28" Margin="0,0,6,0" FontSize="12"
+                          ToolTip="Frames per second: more is smoother, fewer is smaller"/>
+                <ComboBox x:Name="LengthBox" Width="84" Height="28" FontSize="12"
+                          ToolTip="Recording stops by itself after this long"/>
+            </StackPanel>
             <Button x:Name="RecordButton" Content="Record" Style="{StaticResource PrimaryCompactButton}" Margin="0,0,4,0" Click="OnRecord"/>
             <Button x:Name="StopButton" Content="Stop" Style="{StaticResource RecordButton}" Margin="0,0,4,0" Click="OnStop" Visibility="Collapsed"/>
             <Button x:Name="CancelButton" Content="Cancel" Style="{StaticResource GhostCompactButton}" Click="OnCancel"/>

@@ -11,6 +11,19 @@ public partial class SettingsWindow : Window
     /// <summary>"Keep GIFs under" choices in MB; 0 is no limit.</summary>
     internal static readonly int[] GifLimits = [0, 5, 10, 20, 50, 100];
 
+    private static readonly string[] Themes = ["System", "Dark", "Light"];
+    private string _themeAtOpen = "System";
+    private bool _saved;
+
+    /// <summary>Shows the chosen theme straight away; Save keeps it, Cancel goes back.</summary>
+    private void OnThemeChanged(object sender, SelectionChangedEventArgs e)
+    {
+        if (IsLoaded && ThemeBox.SelectedItem is string theme)
+        {
+            ThemeManager.Use(Application.Current, theme);
+        }
+    }
+
     private readonly AppController _app;
 
     public SettingsWindow(AppController app)
@@ -31,6 +44,16 @@ public partial class SettingsWindow : Window
         MaxSeconds.Text = s.GifMaxSeconds.ToString();
         ShowCursor.IsChecked = s.GifShowCursor;
         StartWithWindows.IsChecked = Startup.IsEnabled();
+        _themeAtOpen = s.Theme;
+        ThemeBox.ItemsSource = Themes;
+        ThemeBox.SelectedIndex = Math.Max(0, Array.IndexOf(Themes, s.Theme));
+        Closed += (_, _) =>
+        {
+            if (!_saved)
+            {
+                ThemeManager.Use(Application.Current, _themeAtOpen); // Cancel undoes the preview
+            }
+        };
         GifLimit.ItemsSource = GifLimits.Select(m => m == 0 ? "No limit" : $"{m} MB").ToList();
         GifLimit.SelectedIndex = Math.Max(0, Array.IndexOf(GifLimits, s.GifMaxMegabytes));
 
@@ -338,6 +361,7 @@ public partial class SettingsWindow : Window
         settings.GifShowCursor = ShowCursor.IsChecked == true;
         settings.AiEnabled = AiEnabled.IsChecked == true;
         settings.CheckForUpdates = CheckForUpdates.IsChecked == true;
+        settings.Theme = ThemeBox.SelectedItem as string ?? "System";
         settings.AiKeepAlive = LocalAi.MemoryModes[Math.Max(0, MemoryMode.SelectedIndex)].KeepAlive;
         settings.GifMaxMegabytes = GifLimits[Math.Max(0, GifLimit.SelectedIndex)];
 
@@ -357,6 +381,7 @@ public partial class SettingsWindow : Window
             return;
         }
 
+        _saved = true;
         Close();
     }
 
