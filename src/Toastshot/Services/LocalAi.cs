@@ -23,7 +23,7 @@ public enum Fit
 }
 
 /// <summary>
-/// The local AI behind Translate and AI vision: Ollama (ollama.com) running one recommended model on this PC.
+/// The local AI behind Translate and the AI reader: Ollama (ollama.com) running one recommended model on this PC.
 /// Finds, starts and installs Ollama, and judges whether a model fits the graphics card.
 /// </summary>
 public static class LocalAi

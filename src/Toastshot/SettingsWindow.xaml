@@ -194,7 +194,7 @@
 
                     <!-- What the section is for sits beside its title; the status row below only says where things stand. -->
                     <TextBlock Style="{StaticResource SectionTitle}" Margin="2,20,0,8">
-                        <Run Text="Local AI"/><Run Text="   Powers Translate and AI vision, on this PC" FontWeight="Normal" FontSize="12" Foreground="{DynamicResource InkMutedBrush}"/>
+                        <Run Text="Local AI"/><Run Text="   Powers Translate and the AI reader, on this PC" FontWeight="Normal" FontSize="12" Foreground="{DynamicResource InkMutedBrush}"/>
                     </TextBlock>
                     <Border Style="{StaticResource SettingsCard}">
                         <StackPanel>
@@ -223,7 +223,7 @@
                                     <CheckBox x:Name="AiEnabled" DockPanel.Dock="Right" VerticalAlignment="Center" AutomationProperties.Name="Use local AI"/>
                                     <StackPanel VerticalAlignment="Center">
                                         <TextBlock Text="Use local AI" Style="{StaticResource SettingLabel}"/>
-                                        <TextBlock Text="Off hides Translate and AI vision" Style="{StaticResource Hint}"/>
+                                        <TextBlock Text="Off hides Translate and the AI reader" Style="{StaticResource Hint}"/>
                                     </StackPanel>
                                 </DockPanel>
                             </Border>
@@ -289,7 +289,7 @@
                                     <DockPanel>
                                         <ComboBox x:Name="VisionModel" DockPanel.Dock="Right" IsEditable="True" Width="220" VerticalAlignment="Center"/>
                                         <StackPanel VerticalAlignment="Center">
-                                            <TextBlock Text="Vision model" Style="{StaticResource SettingLabel}"/>
+                                            <TextBlock Text="AI reader model" Style="{StaticResource SettingLabel}"/>
                                             <TextBlock Text="Any model that can read images" Style="{StaticResource Hint}"/>
                                         </StackPanel>
                                     </DockPanel>

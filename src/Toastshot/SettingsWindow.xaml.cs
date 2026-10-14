@@ -186,7 +186,7 @@ public partial class SettingsWindow : Window
             var vram = loaded.Sum(m => m.VramBytes);
             ShowAi("StatusOkBrush", $"Ready · {LocalAi.DisplayName(model)}",
                 loaded.Count == 0
-                    ? "Not in memory now; it loads when you use Translate or AI vision"
+                    ? "Not in memory now; it loads when you use Translate or the AI reader"
                     : $"Using {vram / 1073741824.0:0.0} GB of graphics memory now",
                 loaded.Count == 0 ? AiStep.None : AiStep.Unload, "Unload now");
         }
@@ -268,7 +268,7 @@ public partial class SettingsWindow : Window
             SetItems(VisionModel, models.Where(m => m.HasVision).Select(m => m.Name));
             ModelStatus.Text = models.Count == 0
                 ? $"Ollama has no models yet. Set up downloads {LocalAi.RecommendedName}."
-                : $"{models.Count} models installed, {models.Count(m => m.HasVision)} with vision.";
+                : $"{models.Count} models installed, {models.Count(m => m.HasVision)} can read images.";
         }
         catch (OllamaException ex)
         {

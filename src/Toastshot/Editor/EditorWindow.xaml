@@ -81,7 +81,7 @@
                     </DockPanel>
                     <DockPanel Grid.Row="1" Margin="0,0,0,8">
                         <Button x:Name="RereadButton" DockPanel.Dock="Right" Content="Read" Margin="8,0,0,0" Click="OnExtractText" ToolTip="Read the image again with the selected reader"/>
-                        <ComboBox x:Name="ReaderBox" ToolTip="Windows OCR is instant and offline. AI vision uses your Ollama vision model (slower; good for handwriting or stylised text)."/>
+                        <ComboBox x:Name="ReaderBox" ToolTip="Windows OCR is instant and offline. The AI reader uses your local AI (slower; good for handwriting or stylised text)."/>
                     </DockPanel>
                     <TextBox x:Name="OcrText" Grid.Row="2" Style="{StaticResource EditorBox}" MinHeight="80"
                              ToolTip="You can edit this before translating"/>

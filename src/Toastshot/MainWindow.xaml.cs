@@ -43,7 +43,7 @@ public partial class MainWindow : Window
 
     private bool _checking;
 
-    /// <summary>Shows whether Translate and AI vision will work, and how much graphics memory the model holds now.</summary>
+    /// <summary>Shows whether Translate and the AI reader will work, and how much graphics memory the model holds now.</summary>
     private async Task CheckOllamaAsync()
     {
         if (_checking)

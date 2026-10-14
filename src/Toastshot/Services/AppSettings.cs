@@ -13,7 +13,7 @@ public sealed class AppSettings
     /// <summary>Vision model used by "Read with AI" (an alternative to Windows OCR).</summary>
     public string VisionModel { get; set; } = LocalAi.RecommendedModel;
 
-    /// <summary>Translate and AI vision are shown and use Ollama. Off hides them and never contacts Ollama.</summary>
+    /// <summary>Translate and the AI reader are shown and use Ollama. Off hides them and never contacts Ollama.</summary>
     public bool AiEnabled { get; set; } = true;
 
     /// <summary>"System" (follow the Windows app mode), "Dark" or "Light".</summary>

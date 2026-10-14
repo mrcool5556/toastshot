@@ -959,7 +959,7 @@ public partial class CaptureWindow : Window
             OcrText.Text = text;
             var lines = text.Length == 0 ? 0 : text.Split('\n').Length;
             TextStatus.Text = lines == 0
-                ? "No text found. For handwriting, try AI vision in the editor."
+                ? "No text found. For handwriting, try the AI reader in the editor."
                 : $"Found {lines} line{(lines == 1 ? "" : "s")} of text.";
             return lines > 0;
         }

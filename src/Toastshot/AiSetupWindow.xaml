@@ -16,7 +16,7 @@
         </Border>
 
         <StackPanel Margin="24,20,24,22">
-            <TextBlock Text="Unlock Translate and AI vision" Style="{StaticResource WindowTitle}" FontSize="18"/>
+            <TextBlock Text="Unlock Translate and the AI reader" Style="{StaticResource WindowTitle}" FontSize="18"/>
             <StackPanel Margin="0,12,0,0">
                 <DockPanel Margin="0,0,0,6">
                     <Ellipse DockPanel.Dock="Left" Width="5" Height="5" Fill="{DynamicResource AccentBrush}" Margin="2,7,10,0" VerticalAlignment="Top"/>

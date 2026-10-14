@@ -109,7 +109,7 @@ public partial class AiSetupWindow : Window
             });
 
             Step("Local AI is ready.", 1, "");
-            ProgressText.Text = $"Local AI is ready. Translate and AI vision now use {LocalAi.RecommendedName}.";
+            ProgressText.Text = $"Local AI is ready. Translate and the AI reader now use {LocalAi.RecommendedName}.";
             _done = true;
             InstallButton.Content = "Done";
             CancelButton.Visibility = Visibility.Collapsed;

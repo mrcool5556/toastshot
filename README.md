@@ -60,13 +60,13 @@ selected text in a box), and `Ctrl+Y` redoes.
 
 ## Local AI (optional)
 
-Translate and AI vision (reading handwriting and stylised text) use [Ollama](https://ollama.com) with one recommended model,
+Translate and the AI reader (reads handwriting and stylised text) use [Ollama](https://ollama.com) with one recommended model,
 **Gemma 3 4B**: a 3.4 GB download that uses about 4 GB of graphics memory while it works.
 
 - **Set up** from *Settings › Local AI*. Toastshot checks your graphics card, says whether the model fits, then installs Ollama
   (checking it's signed by Ollama; no admin) and downloads the model.
 - **Graphics memory** is freed 2 minutes after the last use (or 30 seconds, 5 minutes, or never). *Unload now* frees it at once.
-- **Off switch:** turn off *Use local AI* and Translate and AI vision disappear; Toastshot never contacts Ollama.
+- **Off switch:** turn off *Use local AI* and Translate and the AI reader disappear; Toastshot never contacts Ollama.
 - **Advanced:** any Ollama models, or another server.
 
 Windows OCR reads only languages installed in Windows. To read Japanese, Korean, Chinese and so on, add the language in

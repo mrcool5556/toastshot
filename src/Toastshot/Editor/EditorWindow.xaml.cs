@@ -121,7 +121,7 @@ public partial class EditorWindow : Window
 
         if (_app.Settings.AiEnabled)
         {
-            options.Add(new ReaderOption($"AI vision · {LocalAi.DisplayName(_app.Settings.VisionModel)}", null, true));
+            options.Add(new ReaderOption($"AI reader · {LocalAi.DisplayName(_app.Settings.VisionModel)}", null, true));
         }
         ReaderBox.ItemsSource = options;
         ReaderBox.SelectedItem = options.FirstOrDefault(o => !o.UseAi && string.Equals(o.OcrLanguage, _app.Settings.OcrLanguage, StringComparison.OrdinalIgnoreCase))
@@ -351,7 +351,7 @@ public partial class EditorWindow : Window
             OcrText.Text = text;
             var lines = text.Length == 0 ? 0 : text.Split('\n').Length;
             SetStatus(lines == 0
-                ? "No text found. Try another reader language, or AI vision."
+                ? "No text found. Try another reader language, or the AI reader."
                 : $"Found {lines} line{(lines == 1 ? "" : "s")} of text.");
             return lines > 0;
         }
