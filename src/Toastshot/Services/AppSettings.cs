@@ -55,26 +55,6 @@ public sealed class AppSettings
 
     public static string DefaultPath => Path.Combine(DataDirectory, "settings.json");
 
-    /// <summary>
-    /// Toastshot was called Glance before 0.2.0: the first time it starts, it takes the settings Glance saved.
-    /// </summary>
-    public static void MoveFromGlance()
-    {
-        var old = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Glance", "settings.json");
-        try
-        {
-            if (File.Exists(old) && !File.Exists(DefaultPath))
-            {
-                Directory.CreateDirectory(DataDirectory);
-                File.Copy(old, DefaultPath);
-            }
-        }
-        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
-        {
-            // Defaults are fine if the old settings can't be read.
-        }
-    }
-
     private static readonly JsonSerializerOptions JsonOptions = new() { WriteIndented = true };
 
     public static AppSettings Load(string? path = null)

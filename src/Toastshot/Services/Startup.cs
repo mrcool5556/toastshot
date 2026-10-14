@@ -11,17 +11,6 @@ public static class Startup
     private const string RunKey = @"Software\Microsoft\Windows\CurrentVersion\Run";
     private const string ValueName = "Toastshot";
 
-    /// <summary>Glance (this app's name before 0.2.0) may have its own startup entry: turn it into Toastshot's.</summary>
-    public static void MoveFromGlance()
-    {
-        using var key = Registry.CurrentUser.OpenSubKey(RunKey, writable: true);
-        if (key?.GetValue("Glance") is string)
-        {
-            key.DeleteValue("Glance", throwOnMissingValue: false);
-            Set(true);
-        }
-    }
-
     public static bool IsEnabled()
     {
         using var key = Registry.CurrentUser.OpenSubKey(RunKey);

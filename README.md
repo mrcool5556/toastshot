@@ -6,7 +6,6 @@ your PC.
 
 Toastshot is free and open source. If it's useful to you, you can support it (see [Support](#support)).
 
-*Toastshot was called Glance until version 0.2.0. Updating from Glance keeps all your settings.*
 
 ## What it does
 

@@ -41,8 +41,6 @@ public partial class App : Application
         ThemeManager.FollowSystem(this);
         TempFiles.CleanUp(TimeSpan.FromDays(1));
 
-        AppSettings.MoveFromGlance();
-        Services.Startup.MoveFromGlance(); // not Application.Startup
         _controller = new AppController(AppSettings.Load());
         ThemeManager.Use(this, _controller.Settings.Theme); // System, or a fixed Dark/Light chosen in Settings
         _controller.Start(e.Args);
