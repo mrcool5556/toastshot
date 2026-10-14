@@ -43,7 +43,4 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           $version = $env:GITHUB_REF_NAME.TrimStart('v')
-          # Glance.zip is the same package under the old name, so copies installed as Glance 0.1.0 (whose updater looks
-          # for that file) can update. Drop it once few people are on 0.1.0.
-          Copy-Item dist/Toastshot.zip dist/Glance.zip
-          gh release create $env:GITHUB_REF_NAME dist/Toastshot.zip dist/Glance.zip --title "Toastshot $version" --notes-file notes.md
+          gh release create $env:GITHUB_REF_NAME dist/Toastshot.zip --title "Toastshot $version" --notes-file notes.md
