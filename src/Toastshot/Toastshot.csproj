@@ -15,7 +15,7 @@
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <!-- The lens mark: the exe, the taskbar and every window title bar (WPF windows use it unless they set their own). -->
     <ApplicationIcon>Toastshot.ico</ApplicationIcon>
-    <Version>0.3.2</Version>
+    <Version>0.4.0</Version>
     <Product>Toastshot</Product>
     <Description>Capture, mark up, read and translate screen regions</Description>
     <Copyright>Toastshot contributors · GPL-3.0-or-later</Copyright>

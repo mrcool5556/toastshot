@@ -3,6 +3,12 @@
 Each version's section becomes its GitHub release notes, which Toastshot shows in its update window.
 Write for people using Toastshot: what they can do now, what got fixed.
 
+## 0.4.0
+
+- **One installer:** download **ToastshotSetup.exe** and run it. There's no zip to unzip and no install script, which browsers and antivirus were wary of.
+- Uninstall from Settings › Apps as before; your settings are kept.
+- Updating from 0.3.x: use **Download** in Settings to get the setup once. Updates after that install themselves again.
+
 ## 0.3.2
 
 ### Fixed
