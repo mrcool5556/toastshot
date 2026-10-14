@@ -3,6 +3,17 @@
 Each version's section becomes its GitHub release notes, which Toastshot shows in its update window.
 Write for people using Toastshot: what they can do now, what got fixed.
 
+## 0.3.0
+
+### New
+- **Dark or light:** Settings › General › Theme lets you pick Dark, Light or follow Windows. It changes as you pick, so you can see it before saving.
+- **Frame rate and length on the recording bar:** choose them right before you press Record. Toastshot remembers your choice for next time.
+- **Settings in tabs:** General, GIF & video, Hotkeys, and Text & AI, instead of one long page.
+
+### Changed
+- AI vision is now called the **AI reader**, since all it does is read text in a screenshot.
+- If Settings can't save a value, it takes you to that field, even on another tab.
+
 ## 0.2.0
 
 The first public version.
