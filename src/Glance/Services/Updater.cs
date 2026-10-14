@@ -12,7 +12,7 @@ namespace Glance.Services;
 public static class Project
 {
     /// <summary>GitHub "owner/repository" that releases come from.</summary>
-    public const string Repository = "";
+    public const string Repository = "mrcool5556/glance-screenshot";
 
     /// <summary>Where the Support button goes (GitHub Sponsors, Ko-fi…).</summary>
     public const string DonationUrl = "https://ko-fi.com/toters";
