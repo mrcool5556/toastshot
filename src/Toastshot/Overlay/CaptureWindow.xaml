@@ -1,0 +1,204 @@
+<Window x:Class="Toastshot.Overlay.CaptureWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Toastshot capture"
+        WindowStyle="None"
+        Background="Black"
+        Topmost="True"
+        ShowInTaskbar="False"
+        ResizeMode="NoResize"
+        Cursor="Cross"
+        Focusable="True"
+        FontFamily="{DynamicResource UiFont}" FontSize="13" UseLayoutRounding="True">
+    <Window.Resources>
+        <!-- Tool icons on a 16px grid, drawn with the ink colour. The floating tool column uses icons so it stays small;
+             every icon has a tooltip with its name and key. -->
+        <Geometry x:Key="IconPen">M2.5,13.5 L3,10.5 L10.5,3 L13,5.5 L5.5,13 Z M9,4.5 L11.5,7</Geometry>
+        <Geometry x:Key="IconMarker">M3.5,11 L10,4.5 L12.5,7 L6,13.5 L3.5,13.5 Z M8.5,13.5 L13.5,13.5</Geometry>
+        <Geometry x:Key="IconLine">M3,13 L13,3</Geometry>
+        <Geometry x:Key="IconArrow">M3,13 L12.5,3.5 M6.5,3.5 L12.5,3.5 L12.5,9.5</Geometry>
+        <Geometry x:Key="IconBox">M2.5,3.5 L13.5,3.5 L13.5,12.5 L2.5,12.5 Z</Geometry>
+        <Geometry x:Key="IconOval">M8,3 C11.3,3 13.5,5.2 13.5,8 C13.5,10.8 11.3,13 8,13 C4.7,13 2.5,10.8 2.5,8 C2.5,5.2 4.7,3 8,3 Z</Geometry>
+        <Geometry x:Key="IconText">M3,3.5 L13,3.5 M8,3.5 L8,13 M6,13 L10,13</Geometry>
+        <Geometry x:Key="IconRedact">M2.5,5 L13.5,5 L13.5,11 L2.5,11 Z M5,5 L2.5,7.5 M9,5 L2.5,11.5 M13,5 L7,11 M13.5,8.5 L11,11</Geometry>
+        <Geometry x:Key="IconUndo">M5.5,3.5 L2.5,6.5 L5.5,9.5 M2.5,6.5 L9.5,6.5 C11.7,6.5 13.5,8.3 13.5,10.5 C13.5,12.2 12.2,13.5 10.5,13.5 L7,13.5</Geometry>
+
+        <Style x:Key="ToolIcon" TargetType="ToggleButton">
+            <Setter Property="Width" Value="32"/>
+            <Setter Property="Height" Value="32"/>
+            <Setter Property="Margin" Value="0,0,0,2"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Focusable" Value="False"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ToggleButton">
+                        <Border x:Name="Chrome" Background="Transparent" BorderBrush="Transparent" BorderThickness="1" CornerRadius="6">
+                            <Path Data="{TemplateBinding Tag}" Width="16" Height="16" Stretch="None" Stroke="{DynamicResource InkBrush}" StrokeThickness="1.5"
+                                  StrokeStartLineCap="Round" StrokeEndLineCap="Round" StrokeLineJoin="Round" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Chrome" Property="Background" Value="{DynamicResource ControlHoverBrush}"/>
+                            </Trigger>
+                            <Trigger Property="IsChecked" Value="True">
+                                <Setter TargetName="Chrome" Property="Background" Value="{DynamicResource AccentSubtleBrush}"/>
+                                <Setter TargetName="Chrome" Property="BorderBrush" Value="{DynamicResource AccentBrush}"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter Property="Opacity" Value="0.38"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="Handle" TargetType="Rectangle">
+            <Setter Property="Width" Value="7"/>
+            <Setter Property="Height" Value="7"/>
+            <Setter Property="Fill" Value="{DynamicResource OverlaySelectionBrush}"/>
+            <Setter Property="Stroke" Value="{DynamicResource OverlayScrimBrush}"/>
+            <Setter Property="StrokeThickness" Value="1"/>
+        </Style>
+
+        <Style x:Key="FloatPanel" TargetType="Border">
+            <Setter Property="Background" Value="{DynamicResource SurfaceRaisedBrush}"/>
+            <Setter Property="BorderBrush" Value="{DynamicResource LineBrush}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="CornerRadius" Value="10"/>
+            <Setter Property="Effect" Value="{DynamicResource FloatShadow}"/>
+        </Style>
+    </Window.Resources>
+
+    <Grid x:Name="Root">
+        <Image x:Name="Frozen" Stretch="Fill" RenderOptions.BitmapScalingMode="NearestNeighbor" IsHitTestVisible="False"/>
+        <!-- The screen dimmed everywhere, and undimmed only inside the selection (a clipped copy). Moving the selection then
+             redraws just the area around it, which keeps dragging smooth on large multi-monitor desktops. -->
+        <Rectangle Fill="{DynamicResource OverlayScrimBrush}" IsHitTestVisible="False"/>
+        <Image x:Name="Bright" Stretch="Fill" RenderOptions.BitmapScalingMode="NearestNeighbor" IsHitTestVisible="False"/>
+        <!-- Drawings live in screen pixels, so they stay put when the selection moves; they are clipped to the selection. -->
+        <Canvas x:Name="Ink" HorizontalAlignment="Left" VerticalAlignment="Top" Background="Transparent" IsHitTestVisible="False"/>
+
+        <Canvas IsHitTestVisible="False">
+            <Rectangle x:Name="SelectionRect" Stroke="{DynamicResource OverlaySelectionBrush}" StrokeThickness="1.5" Visibility="Collapsed"/>
+            <Canvas x:Name="Handles" Visibility="Collapsed">
+                <Rectangle Style="{StaticResource Handle}" Tag="NW"/>
+                <Rectangle Style="{StaticResource Handle}" Tag="N"/>
+                <Rectangle Style="{StaticResource Handle}" Tag="NE"/>
+                <Rectangle Style="{StaticResource Handle}" Tag="E"/>
+                <Rectangle Style="{StaticResource Handle}" Tag="SE"/>
+                <Rectangle Style="{StaticResource Handle}" Tag="S"/>
+                <Rectangle Style="{StaticResource Handle}" Tag="SW"/>
+                <Rectangle Style="{StaticResource Handle}" Tag="W"/>
+            </Canvas>
+            <Border x:Name="SizeBadge" Style="{StaticResource SizeBadge}" Visibility="Collapsed">
+                <TextBlock x:Name="SizeText" Foreground="{DynamicResource InkBrush}" FontFamily="{DynamicResource MonoFont}" FontSize="12"/>
+            </Border>
+        </Canvas>
+        <Canvas x:Name="Crosshair" IsHitTestVisible="False">
+            <Line x:Name="CrossV" Stroke="{DynamicResource OverlayCrosshairBrush}" StrokeThickness="1"/>
+            <Line x:Name="CrossH" Stroke="{DynamicResource OverlayCrosshairBrush}" StrokeThickness="1"/>
+        </Canvas>
+
+        <Canvas x:Name="Bars">
+            <!-- Tools: beside the selection. Click a tool again to go back to moving and resizing. -->
+            <Border x:Name="ToolsBar" Style="{StaticResource FloatPanel}" Padding="4,4,4,2" Visibility="Collapsed">
+                <StackPanel>
+                    <ToggleButton Style="{StaticResource ToolIcon}" Tag="{StaticResource IconPen}" x:Name="PenTool" ToolTip="Pen (P)" Click="OnToolClick"/>
+                    <ToggleButton Style="{StaticResource ToolIcon}" Tag="{StaticResource IconMarker}" x:Name="MarkerTool" ToolTip="Marker (M)" Click="OnToolClick"/>
+                    <ToggleButton Style="{StaticResource ToolIcon}" Tag="{StaticResource IconLine}" x:Name="LineTool" ToolTip="Line; hold Shift for 45° steps (L)" Click="OnToolClick"/>
+                    <ToggleButton Style="{StaticResource ToolIcon}" Tag="{StaticResource IconArrow}" x:Name="ArrowTool" ToolTip="Arrow; hold Shift for 45° steps (A)" Click="OnToolClick"/>
+                    <ToggleButton Style="{StaticResource ToolIcon}" Tag="{StaticResource IconBox}" x:Name="BoxTool" ToolTip="Box; hold Shift for a square (B)" Click="OnToolClick"/>
+                    <ToggleButton Style="{StaticResource ToolIcon}" Tag="{StaticResource IconOval}" x:Name="OvalTool" ToolTip="Oval; hold Shift for a circle (O)" Click="OnToolClick"/>
+                    <ToggleButton Style="{StaticResource ToolIcon}" Tag="{StaticResource IconText}" x:Name="TextTool" ToolTip="Text: click to type, Enter to finish (T)" Click="OnToolClick"/>
+                    <ToggleButton Style="{StaticResource ToolIcon}" Tag="{StaticResource IconRedact}" x:Name="RedactTool" ToolTip="Redact: a solid black box (R)" Click="OnToolClick"/>
+                    <Rectangle Height="1" Margin="4,2,4,4" Fill="{DynamicResource LineBrush}"/>
+                    <ToggleButton x:Name="StyleButton" Style="{StaticResource ToolIcon}" ToolTip="Colour and size" Click="OnStyleClick">
+                        <ToggleButton.Template>
+                            <ControlTemplate TargetType="ToggleButton">
+                                <Border x:Name="Chrome" Background="Transparent" BorderBrush="Transparent" BorderThickness="1" CornerRadius="6">
+                                    <Ellipse x:Name="CurrentColour" Width="16" Height="16" Stroke="{DynamicResource LineStrongBrush}" StrokeThickness="1"
+                                             Fill="{TemplateBinding Background}"/>
+                                </Border>
+                                <ControlTemplate.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter TargetName="Chrome" Property="Background" Value="{DynamicResource ControlHoverBrush}"/>
+                                    </Trigger>
+                                    <Trigger Property="IsChecked" Value="True">
+                                        <Setter TargetName="Chrome" Property="BorderBrush" Value="{DynamicResource AccentBrush}"/>
+                                    </Trigger>
+                                </ControlTemplate.Triggers>
+                            </ControlTemplate>
+                        </ToggleButton.Template>
+                    </ToggleButton>
+                    <Button x:Name="UndoButton" Style="{StaticResource IconButton}" Width="32" Height="32" Margin="0,0,0,2" ToolTip="Undo (Ctrl+Z)"
+                            Focusable="False" IsEnabled="False" Click="OnUndo">
+                        <Path Data="{StaticResource IconUndo}" Width="16" Height="16" Stroke="{DynamicResource InkBrush}" StrokeThickness="1.5"
+                              StrokeStartLineCap="Round" StrokeEndLineCap="Round" StrokeLineJoin="Round"/>
+                    </Button>
+                </StackPanel>
+            </Border>
+
+            <!-- Colour and size, opened from the tool column. -->
+            <Border x:Name="StylePanel" Style="{StaticResource FloatPanel}" Padding="8" Visibility="Collapsed">
+                <StackPanel>
+                    <UniformGrid x:Name="Swatches" Columns="4"/>
+                    <StackPanel Orientation="Horizontal" Margin="2,8,0,0" ToolTip="Line width / text size">
+                        <Slider x:Name="SizeSlider" Width="72" Minimum="1" Maximum="24" Value="4" IsSnapToTickEnabled="True" TickFrequency="1"
+                                VerticalAlignment="Center" ValueChanged="OnSizeChanged" Focusable="False"/>
+                        <TextBlock x:Name="SizeValue" Text="4" Width="20" Margin="8,0,0,0" Style="{StaticResource MonoText}"/>
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+
+            <!-- Outputs: under the selection, Copy last. -->
+            <Border x:Name="ActionsBar" Style="{StaticResource FloatPanel}" Height="44" Padding="8,0" Visibility="Collapsed">
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                    <Button Content="Extract text" Style="{StaticResource GhostCompactButton}" Focusable="False" Click="OnExtractText" ToolTip="Read the text in the selection (Ctrl+E)"/>
+                    <Button x:Name="BarTranslate" Content="Translate" Style="{StaticResource GhostCompactButton}" Focusable="False" Click="OnTranslate" ToolTip="Read and translate the text (Ctrl+T)"/>
+                    <Button Content="Search Google" Style="{StaticResource GhostCompactButton}" Focusable="False" Click="OnSearchGoogle" ToolTip="Find similar images with Google Lens (uploads the capture to Google; Ctrl+G)"/>
+                    <Rectangle Style="{StaticResource Divider}" Margin="4,0"/>
+                    <Button Content="Editor" Style="{StaticResource GhostCompactButton}" Focusable="False" Click="OnOpenEditor" ToolTip="Open in the full editor"/>
+                    <Button Content="Print…" Style="{StaticResource GhostCompactButton}" Focusable="False" Click="OnPrint" ToolTip="Print (Ctrl+P)"/>
+                    <Rectangle Style="{StaticResource Divider}" Margin="4,0"/>
+                    <Button Content="Save…" Style="{StaticResource CompactButton}" Focusable="False" Margin="0,0,8,0" Click="OnSave" ToolTip="Save as PNG, JPEG or BMP (Ctrl+S)"/>
+                    <Button Content="Copy" Style="{StaticResource PrimaryCompactButton}" Focusable="False" Click="OnCopy" ToolTip="Copy to the clipboard (Ctrl+C at any time, or double-click the selection)"/>
+                    <Button Content="✕" Style="{StaticResource IconButton}" Focusable="False" Margin="4,0,0,0" Click="OnClose" ToolTip="Close (Esc)"/>
+                </StackPanel>
+            </Border>
+
+            <!-- Text read from the selection, and its translation, without leaving the screen. -->
+            <Border x:Name="TextCard" Style="{StaticResource FloatPanel}" Width="320" Padding="12" Visibility="Collapsed">
+                <StackPanel>
+                    <DockPanel Margin="0,0,0,8">
+                        <Button DockPanel.Dock="Right" Content="✕" Style="{StaticResource IconButton}" Focusable="False" Click="OnCloseText" ToolTip="Hide"/>
+                        <TextBlock Text="Text in image" Style="{StaticResource CardTitle}"/>
+                    </DockPanel>
+                    <TextBox x:Name="OcrText" Style="{StaticResource EditorBox}" Height="104" ToolTip="You can edit this before translating"/>
+                    <DockPanel Margin="0,8,0,0">
+                        <Button DockPanel.Dock="Left" Content="Copy text" Style="{StaticResource GhostCompactButton}" Margin="-10,0,4,0" Focusable="False" Click="OnCopyText"/>
+                        <Button x:Name="TranslateButton" DockPanel.Dock="Right" Content="Translate" Style="{StaticResource PrimaryCompactButton}" Margin="8,0,0,0" Click="OnTranslate"/>
+                        <ComboBox x:Name="LanguageBox" IsEditable="True" Height="28" ToolTip="Language to translate into (type any language)"/>
+                    </DockPanel>
+                    <StackPanel x:Name="TranslationPanel" Visibility="Collapsed" Margin="0,8,0,0">
+                        <TextBox x:Name="TranslationText" Style="{StaticResource EditorBox}" Height="104" IsReadOnly="True"/>
+                        <Button Content="Copy translation" Style="{StaticResource GhostCompactButton}" HorizontalAlignment="Left" Margin="-10,8,0,0" Focusable="False" Click="OnCopyTranslation"/>
+                    </StackPanel>
+                    <TextBlock x:Name="TextStatus" Style="{StaticResource Hint}" Margin="0,8,0,0"/>
+                </StackPanel>
+            </Border>
+        </Canvas>
+
+        <Border x:Name="HintBar" Style="{StaticResource Chip}" HorizontalAlignment="Left" VerticalAlignment="Top" IsHitTestVisible="False">
+            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                <TextBlock x:Name="HintText" Text="Drag to capture a region" FontWeight="SemiBold" Foreground="{DynamicResource InkBrush}" VerticalAlignment="Center"/>
+                <StackPanel x:Name="HintTail" Orientation="Horizontal" VerticalAlignment="Center">
+                    <ContentControl Content="Esc" ContentTemplate="{StaticResource KeycapTemplate}" Margin="10,0,4,0" VerticalAlignment="Center" Focusable="False"/>
+                    <TextBlock Text="to cancel · hold" Foreground="{DynamicResource InkMutedBrush}" VerticalAlignment="Center"/>
+                    <ContentControl Content="Ctrl" ContentTemplate="{StaticResource KeycapTemplate}" Margin="4,0,4,0" VerticalAlignment="Center" Focusable="False"/>
+                    <TextBlock Text="to copy at once" Foreground="{DynamicResource InkMutedBrush}" VerticalAlignment="Center"/>
+                </StackPanel>
+            </StackPanel>
+        </Border>
+    </Grid>
+</Window>

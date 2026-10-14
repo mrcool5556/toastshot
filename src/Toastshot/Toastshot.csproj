@@ -1,0 +1,40 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <!-- 10.0.19041 gives access to Windows.Media.Ocr (built-in Windows OCR). -->
+    <TargetFramework>net8.0-windows10.0.19041.0</TargetFramework>
+    <SupportedOSPlatformVersion>10.0.19041.0</SupportedOSPlatformVersion>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UseWPF>true</UseWPF>
+    <!-- Only for the tray icon (NotifyIcon) and GDI screen capture. -->
+    <UseWindowsForms>true</UseWindowsForms>
+    <RootNamespace>Toastshot</RootNamespace>
+    <AssemblyName>Toastshot</AssemblyName>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <!-- The lens mark: the exe, the taskbar and every window title bar (WPF windows use it unless they set their own). -->
+    <ApplicationIcon>Toastshot.ico</ApplicationIcon>
+    <Version>0.2.0</Version>
+    <Product>Toastshot</Product>
+    <Description>Capture, mark up, read and translate screen regions</Description>
+    <Copyright>Toastshot contributors · GPL-3.0-or-later</Copyright>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- WPF and WinForms both define Application, Clipboard, etc.; keep WPF as the default. -->
+    <Using Remove="System.Windows.Forms" />
+    <Using Remove="System.Drawing" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Also packed as a WPF resource so the tray can load the small sizes. -->
+    <Resource Include="Toastshot.ico" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Toastshot.Tests" />
+  </ItemGroup>
+
+</Project>

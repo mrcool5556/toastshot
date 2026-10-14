@@ -15,4 +15,4 @@ jobs:
         with:
           dotnet-version: 8.0.x
       # Tests that need a real desktop session (clipboard, screen capture, the video encoder) run locally only.
-      - run: dotnet test Glance.sln -c Release --filter "Needs!=Desktop"
+      - run: dotnet test Toastshot.sln -c Release --filter "Needs!=Desktop"

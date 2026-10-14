@@ -1,6 +1,6 @@
 # Publishes a release when a version tag is pushed:  git tag v0.2.0  &&  git push origin v0.2.0
-# The release carries Glance.zip (the installer package) and that version's notes from CHANGELOG.md;
-# Glance's in-app updater reads both.
+# The release carries Toastshot.zip (the installer package) and that version's notes from CHANGELOG.md;
+# Toastshot's in-app updater reads both.
 name: Release
 
 on:
@@ -20,7 +20,7 @@ jobs:
           dotnet-version: 8.0.x
 
       - name: Test
-        run: dotnet test Glance.sln -c Release --filter "Needs!=Desktop"
+        run: dotnet test Toastshot.sln -c Release --filter "Needs!=Desktop"
 
       - name: Build the installer package
         shell: pwsh
@@ -34,7 +34,7 @@ jobs:
           $version = $env:GITHUB_REF_NAME.TrimStart('v')
           $changelog = Get-Content CHANGELOG.md -Raw
           $section = [regex]::Match($changelog, "(?ms)^## \[?$([regex]::Escape($version))\]?[^\n]*\n(.*?)(?=^## |\z)")
-          $notes = if ($section.Success) { $section.Groups[1].Value.Trim() } else { "Glance $version" }
+          $notes = if ($section.Success) { $section.Groups[1].Value.Trim() } else { "Toastshot $version" }
           Set-Content -Path notes.md -Value $notes -Encoding utf8
 
       - name: Publish the release
@@ -43,4 +43,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           $version = $env:GITHUB_REF_NAME.TrimStart('v')
-          gh release create $env:GITHUB_REF_NAME dist/Glance.zip --title "Glance $version" --notes-file notes.md
+          # Glance.zip is the same package under the old name, so copies installed as Glance 0.1.0 (whose updater looks
+          # for that file) can update. Drop it once few people are on 0.1.0.
+          Copy-Item dist/Toastshot.zip dist/Glance.zip
+          gh release create $env:GITHUB_REF_NAME dist/Toastshot.zip dist/Glance.zip --title "Toastshot $version" --notes-file notes.md

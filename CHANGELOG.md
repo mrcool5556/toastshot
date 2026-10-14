@@ -1,7 +1,14 @@
 # Changelog
 
-Each version's section becomes its GitHub release notes, which Glance shows in its update window.
-Write for people using Glance: what they can do now, what got fixed.
+Each version's section becomes its GitHub release notes, which Toastshot shows in its update window.
+Write for people using Toastshot: what they can do now, what got fixed.
+
+## 0.2.0
+
+**Glance is now Toastshot**, with a new toaster icon. Same app, a name that is easier to find (and fits Toasterland).
+
+- Updating from Glance carries everything over: your settings, hotkeys, local AI choices and **Start with Windows**.
+- The old Glance folder, Start menu entry and Apps entry are replaced by Toastshot's.
 
 ## 0.1.0
 
