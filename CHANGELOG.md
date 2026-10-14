@@ -3,6 +3,11 @@
 Each version's section becomes its GitHub release notes, which Toastshot shows in its update window.
 Write for people using Toastshot: what they can do now, what got fixed.
 
+## 0.3.1
+
+- **Updating moved into Settings:** when a new version is out, Check now becomes **Update**, and what's new in every version since yours shows right below it.
+- A small dot next to **Settings** in the main window means an update is ready. The banner above the Capture buttons is gone.
+
 ## 0.3.0
 
 ### New
