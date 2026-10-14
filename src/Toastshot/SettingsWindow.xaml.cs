@@ -163,11 +163,11 @@ public partial class SettingsWindow : Window
         {
             if (LocalAi.IsInstalled)
             {
-                ShowAi("StatusWarnBrush", "Ollama isn't running", "Translate and AI vision need it", AiStep.Start, "Start");
+                ShowAi("StatusWarnBrush", "Ollama isn't running", "", AiStep.Start, "Start");
             }
             else
             {
-                ShowAi("InkMutedBrush", "Not set up", $"Unlocks Translate and AI vision. Runs on this PC; nothing is uploaded.", AiStep.SetUp, "Set up…");
+                ShowAi("InkMutedBrush", "Not set up", "Nothing is uploaded; it all stays on this PC", AiStep.SetUp, "Set up…");
             }
 
             return;
@@ -201,6 +201,7 @@ public partial class SettingsWindow : Window
         AiDot.SetResourceReference(System.Windows.Shapes.Shape.FillProperty, dot);
         AiStatus.Text = status;
         AiDetail.Text = detail;
+        AiDetail.Visibility = detail.Length > 0 ? Visibility.Visible : Visibility.Collapsed;
         _aiStep = step;
         AiAction.Content = action;
         AiAction.Visibility = step == AiStep.None ? Visibility.Collapsed : Visibility.Visible;
@@ -235,6 +236,7 @@ public partial class SettingsWindow : Window
         catch (Exception ex) when (ex is OllamaException or System.ComponentModel.Win32Exception or OperationCanceledException)
         {
             AiDetail.Text = ex.Message;
+            AiDetail.Visibility = Visibility.Visible;
         }
         finally
         {

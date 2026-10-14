@@ -192,7 +192,10 @@
                         </StackPanel>
                     </Border>
 
-                    <TextBlock Text="Local AI" Style="{StaticResource SectionTitle}" Margin="2,20,0,8"/>
+                    <!-- What the section is for sits beside its title; the status row below only says where things stand. -->
+                    <TextBlock Style="{StaticResource SectionTitle}" Margin="2,20,0,8">
+                        <Run Text="Local AI"/><Run Text="   Powers Translate and AI vision, on this PC" FontWeight="Normal" FontSize="12" Foreground="{DynamicResource InkMutedBrush}"/>
+                    </TextBlock>
                     <Border Style="{StaticResource SettingsCard}">
                         <StackPanel>
                             <!-- Status, with the one action that moves it forward (Set up…, Start, Unload now). -->
@@ -202,7 +205,7 @@
                                     <Ellipse x:Name="AiDot" Width="8" Height="8" Fill="{DynamicResource InkMutedBrush}" VerticalAlignment="Center" Margin="0,0,10,0"/>
                                     <StackPanel VerticalAlignment="Center" Margin="0,0,12,0">
                                         <TextBlock x:Name="AiStatus" Text="Checking…" Style="{StaticResource SettingLabel}"/>
-                                        <TextBlock x:Name="AiDetail" Style="{StaticResource Hint}"/>
+                                        <TextBlock x:Name="AiDetail" Style="{StaticResource Hint}" Visibility="Collapsed"/>
                                     </StackPanel>
                                 </DockPanel>
                             </Border>
