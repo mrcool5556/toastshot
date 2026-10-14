@@ -112,7 +112,7 @@ public sealed class AnnotationLayerTests
         var (ink, layer) = NewLayer();
         layer.Tool = Tool.Line;
         Drag(layer, new Point(10, 10), new Point(90, 14), constrain: true);
-        var line = (LineGeometry)((Path)Assert.Single(ink.Children)).Data;
+        var line = Assert.IsType<LineGeometry>(Assert.IsType<Path>(Assert.Single(ink.Children.Cast<UIElement>())).Data);
         Assert.Equal(new Point(10, 10), line.StartPoint);
         Assert.Equal(10, line.EndPoint.Y, 3); // nearly horizontal snaps to horizontal
     });
