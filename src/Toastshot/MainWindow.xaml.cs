@@ -83,7 +83,7 @@ public partial class MainWindow : Window
             }
             else
             {
-                ShowStatus("InkMutedBrush", "Local AI not set up", " · unlocks Translate and AI vision", setUpLink: true);
+                ShowStatus("InkMutedBrush", "Local AI not set up", " · unlocks Translate", setUpLink: true);
             }
         }
         finally
